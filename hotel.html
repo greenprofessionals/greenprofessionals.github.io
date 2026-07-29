@@ -108,6 +108,26 @@ a{color:inherit;text-decoration:none}
 .hotel-video iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
 .video-caption{padding:13px 16px;background:#fff;color:var(--muted);font-size:.92rem}
 .video-caption strong{color:var(--navy)}
+/* Chairman booking appeal */
+.chairman-appeal{padding:64px 0;background:linear-gradient(180deg,#fff8ee 0%,#fff 100%);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.appeal-card{position:relative;overflow:hidden;display:grid;grid-template-columns:.34fr 1fr;gap:28px;align-items:stretch;background:#fff;border:1px solid var(--line);border-radius:30px;box-shadow:var(--shadow)}
+.appeal-side{background:linear-gradient(145deg,var(--navy),var(--navy2));color:#fff;padding:34px;display:flex;flex-direction:column;justify-content:center;text-align:center;position:relative}
+.appeal-side:after{content:"";position:absolute;right:-70px;bottom:-75px;width:220px;height:220px;border-radius:50%;border:34px solid rgba(217,164,65,.14)}
+.chairman-monogram{width:112px;height:112px;border-radius:50%;margin:0 auto 18px;display:grid;place-items:center;background:linear-gradient(135deg,#fffaf0,#f4d487);color:var(--navy);font-family:Anton,sans-serif;font-size:2.25rem;letter-spacing:.04em;border:5px solid rgba(255,255,255,.9);box-shadow:0 16px 34px rgba(0,0,0,.25);position:relative;z-index:1}
+.appeal-side .role{color:var(--gold2);font-weight:900;letter-spacing:.14em;text-transform:uppercase;font-size:.76rem;position:relative;z-index:1}
+.appeal-side .name{font-family:Anton,sans-serif;font-size:1.8rem;line-height:1.05;text-transform:uppercase;margin-top:6px;position:relative;z-index:1}
+.appeal-content{padding:38px 38px 36px}
+.appeal-content h2{font-family:Anton,sans-serif;color:var(--navy);font-size:clamp(2rem,4vw,3rem);line-height:1.05;text-transform:uppercase}
+.appeal-content h2 span{color:var(--gold)}
+.appeal-quote{margin-top:18px;padding:22px 24px;border-left:5px solid var(--gold);border-radius:16px;background:linear-gradient(135deg,#fffaf0,#f7fbff);font-size:1.08rem;color:var(--ink)}
+.appeal-quote strong{color:var(--navy)}
+.warning-list{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:20px}
+.warning-item{border:1px solid var(--line);border-radius:16px;padding:15px;background:#fff;box-shadow:0 10px 24px rgba(7,31,73,.05)}
+.warning-item b{display:block;color:#9b2c2c;text-transform:uppercase;font-size:.76rem;letter-spacing:.09em;margin-bottom:5px}
+.warning-item span{color:var(--muted);font-size:.92rem}
+.appeal-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px}
+@media(max-width:900px){.appeal-card{grid-template-columns:1fr}.appeal-side{padding:28px}.warning-list{grid-template-columns:1fr}.appeal-content{padding:30px 22px}}
+
 .booking-banner{padding:56px 0;background:linear-gradient(125deg,var(--navy),var(--navy2));color:#fff;text-align:center}
 .booking-banner h2{font-family:Anton,sans-serif;text-transform:uppercase;font-size:clamp(2.1rem,5vw,3.8rem);line-height:1.02}
 .booking-banner h2 span{color:var(--gold2)}
@@ -137,6 +157,7 @@ a{color:inherit;text-decoration:none}
     </a>
     <nav class="nav-actions" aria-label="Hotel page navigation">
       <a class="pill" href="slpp_new_england_chapter.html">Main Event Page</a>
+      <a class="pill" href="#chairman-message">Chairman’s Message</a>
       <a class="pill" href="#hotel">Hotel Details</a>
       <a class="pill gold" href="tel:+16172883030">Call Hotel</a>
       <a class="pill navy" href="http://bit.ly/hiexbos" target="_blank" rel="noopener">Book Now</a>
@@ -164,14 +185,42 @@ a{color:inherit;text-decoration:none}
     </div>
     <aside class="urgency-card">
       <div class="icon">🛎️</div>
-      <h2>Rooms Are <span>Limited</span></h2>
-      <p>Please do not wait until the inauguration weekend approaches. Reserving now gives traveling guests the best opportunity to stay at the recommended hotel and take advantage of the chapter’s group rates.</p>
-      <p class="small">When calling, mention the SLPP North America New England Chapter inauguration weekend.</p>
+      <h2>Do Not Risk <span>Missing the Room Block</span></h2>
+      <p>The chapter cannot guarantee that these rooms or rates will remain available as the weekend approaches. Guests who delay may have to stay farther away, pay a higher rate, or arrange separate transportation.</p>
+      <p class="small">Chairman Kula Sillah urges every traveling guest to reserve now and mention the SLPP North America New England Chapter inauguration weekend.</p>
     </aside>
   </div>
 </section>
 
 <main>
+<section class="chairman-appeal" id="chairman-message">
+  <div class="container">
+    <div class="appeal-card">
+      <div class="appeal-side">
+        <div class="chairman-monogram">KS</div>
+        <div class="role">A Message from the Chairman</div>
+        <div class="name">Kula Sillah</div>
+      </div>
+      <div class="appeal-content">
+        <div class="label">Please Act Now</div>
+        <h2>Secure Your Room <span>Before Availability Tightens</span></h2>
+        <div class="appeal-quote">
+          <strong>“To all our members, sister chapters, friends, and invited guests:</strong> please do not postpone your hotel reservation. Boston is a busy destination, and our inauguration weekend is drawing near. The chapter has worked to identify a convenient hotel and group rates, but we cannot hold rooms indefinitely. Booking now will help you avoid higher prices, inconvenient locations, and last-minute travel difficulties. I want every guest to arrive comfortably, stay close to the celebration, and enjoy the full weekend with us.”
+        </div>
+        <div class="warning-list">
+          <div class="warning-item"><b>Rates May Increase</b><span>The advertised group rates may no longer be available once the room block fills or closes.</span></div>
+          <div class="warning-item"><b>Nearby Rooms May Sell Out</b><span>Waiting may force guests to book farther away from fellow attendees and the weekend activities.</span></div>
+          <div class="warning-item"><b>Last-Minute Travel Costs More</b><span>Early booking gives you more time to coordinate flights, ground transportation, and the full weekend program.</span></div>
+        </div>
+        <div class="appeal-actions">
+          <a class="btn gold" href="tel:+16172883030">Call Hotel Now: (617) 288-3030</a>
+          <a class="btn navy" href="http://bit.ly/hiexbos" target="_blank" rel="noopener">Reserve on Hotel Website</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <section class="hotel-section" id="hotel">
   <div class="container">
     <div class="section-head">
@@ -206,7 +255,7 @@ a{color:inherit;text-decoration:none}
           <li>Near MBTA Red Line access</li>
           <li>Airport shuttle: $10/person</li>
         </ul>
-        <div class="hotel-note"><strong>Guest note:</strong> Group rates are available for Friday, August 21 through Sunday, August 23, 2026. Rates include complimentary hot and cold breakfast each morning. Please contact the hotel directly and mention the SLPP North America New England Chapter inauguration weekend.</div>
+        <div class="hotel-note"><strong>Important booking warning:</strong> Group rates are available for Friday, August 21 through Sunday, August 23, 2026, but availability is not guaranteed. Once the room block is filled or released, guests may face higher prices or fewer convenient options. Rates include complimentary hot and cold breakfast each morning. Contact the hotel now and mention the SLPP North America New England Chapter inauguration weekend.</div>
         <div class="hotel-actions">
           <a class="gold" href="tel:+16172883030">Call Hotel: (617) 288-3030</a>
           <a href="http://bit.ly/hiexbos" target="_blank" rel="noopener">Hotel Website</a>
@@ -239,7 +288,7 @@ a{color:inherit;text-decoration:none}
 <section class="booking-banner">
   <div class="container">
     <h2>Reserve Now and <span>Join Us in Boston</span></h2>
-    <p>Help the chapter plan a welcoming and well-coordinated weekend by confirming your travel arrangements early. Book your hotel room, complete the event RSVP form, and prepare for three days of unity, celebration, and pride.</p>
+    <p>Chairman Kula Sillah strongly encourages every traveling guest to secure a room now. Do not assume that the current rate or nearby availability will remain open. Book your hotel room, complete the event RSVP form, and prepare for three days of unity, celebration, and pride.</p>
     <div class="hero-actions">
       <a class="btn gold" href="tel:+16172883030">Call to Reserve</a>
       <a class="btn light" href="https://forms.gle/eavHDvYBW4K75JjcA" target="_blank" rel="noopener">Complete Event RSVP</a>
