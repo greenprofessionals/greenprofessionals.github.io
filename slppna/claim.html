@@ -448,107 +448,43 @@ function renderTierControls() {
 }
 
 /* ======================= API TRANSPORT =======================
- * GitHub Pages -> Apps Script transport.
- * GET/read calls use JSONP because Apps Script ContentService redirects
- * to script.googleusercontent.com and normal cross-origin fetch can return
- * an HTML redirect/error document to the browser.
- * POST/write calls use a hidden form + iframe and receive the result via
- * window.postMessage, so admin passcodes and attendee data are not put in URLs.
+ * GitHub Pages -> Google Apps Script transport using fetch().
+ * All responses are read as text first so an HTML error page is reported
+ * clearly instead of causing an opaque "Unexpected token <" JSON error.
  */
-function apiGet(params, timeoutMs = 15000) {
-  return new Promise((resolve, reject) => {
-    const callbackName = `__slppJsonp_${Date.now()}_${Math.random().toString(36).slice(2)}`;
-    const script = document.createElement('script');
-    let timer = null;
-
-    const cleanup = () => {
-      if (timer) clearTimeout(timer);
-      try { delete window[callbackName]; } catch (_) { window[callbackName] = undefined; }
-      script.remove();
-    };
-
-    window[callbackName] = (data) => {
-      cleanup();
-      resolve(data);
-    };
-
-    script.onerror = () => {
-      cleanup();
-      reject(new Error('Could not reach the ticket server.'));
-    };
-
-    timer = setTimeout(() => {
-      cleanup();
-      reject(new Error('The ticket server took too long to respond.'));
-    }, timeoutMs);
-
-    const query = new URLSearchParams({ ...params, callback: callbackName });
-    script.src = `${CONFIG.ENDPOINT}?${query.toString()}`;
-    document.head.appendChild(script);
-  });
+async function parseApiResponse(res) {
+  const text = await res.text();
+  if (!res.ok) {
+    throw new Error(`Ticket server returned HTTP ${res.status}.`);
+  }
+  try {
+    return JSON.parse(text);
+  } catch (err) {
+    const preview = String(text || '').replace(/\s+/g, ' ').slice(0, 180);
+    throw new Error(`Ticket server did not return JSON. Response begins: ${preview || '(empty response)'}`);
+  }
 }
 
-function apiPost(payload, timeoutMs = 20000) {
-  return new Promise((resolve, reject) => {
-    const requestId = `slpp_${Date.now()}_${Math.random().toString(36).slice(2)}`;
-    const iframeName = `slpp_iframe_${requestId}`;
-    const iframe = document.createElement('iframe');
-    const form = document.createElement('form');
-    let timer = null;
-
-    iframe.name = iframeName;
-    iframe.style.display = 'none';
-    iframe.setAttribute('aria-hidden', 'true');
-
-    form.method = 'POST';
-    form.action = CONFIG.ENDPOINT;
-    form.target = iframeName;
-    form.style.display = 'none';
-
-    const fields = {
-      transport: 'iframe',
-      requestId,
-      origin: window.location.origin,
-      payload: JSON.stringify(payload)
-    };
-
-    Object.entries(fields).forEach(([name, value]) => {
-      const input = document.createElement('input');
-      input.type = 'hidden';
-      input.name = name;
-      input.value = value;
-      form.appendChild(input);
-    });
-
-    const cleanup = () => {
-      if (timer) clearTimeout(timer);
-      window.removeEventListener('message', onMessage);
-      form.remove();
-      setTimeout(() => iframe.remove(), 0);
-    };
-
-    const onMessage = (event) => {
-      // Apps Script response page is served from googleusercontent.com.
-      if (!event.data || event.data.channel !== 'slpp-ticket-api' || event.data.requestId !== requestId) return;
-      cleanup();
-      if (event.data.ok === false && event.data.transportError) {
-        reject(new Error(event.data.error || 'Ticket server request failed.'));
-      } else {
-        resolve(event.data.data);
-      }
-    };
-
-    window.addEventListener('message', onMessage);
-    document.body.appendChild(iframe);
-    document.body.appendChild(form);
-
-    timer = setTimeout(() => {
-      cleanup();
-      reject(new Error('The ticket server took too long to respond.'));
-    }, timeoutMs);
-
-    form.submit();
+async function apiGet(params) {
+  const query = new URLSearchParams(params);
+  const url = `${CONFIG.ENDPOINT}?${query.toString()}`;
+  const res = await fetch(url, {
+    method: 'GET',
+    redirect: 'follow',
+    cache: 'no-store'
   });
+  return parseApiResponse(res);
+}
+
+async function apiPost(payload) {
+  const res = await fetch(CONFIG.ENDPOINT, {
+    method: 'POST',
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+    body: JSON.stringify(payload),
+    redirect: 'follow',
+    cache: 'no-store'
+  });
+  return parseApiResponse(res);
 }
 /* ============================================================= */
 
@@ -1106,6 +1042,6 @@ viewSummaryBtn.addEventListener('click', async () => {
   }
 });
 </script>
-<!-- regional transport v6 2026-08-08 -->
+<!-- regional fetch transport v7 2026-08-08 -->
 </body>
 </html>
