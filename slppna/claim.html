@@ -308,6 +308,8 @@ const CONFIG = {
 let TIER_LABELS = {};
 /* ========================================================= */
 
+const submitBtn = document.getElementById('submitBtn');
+
 function setText(id, value) {
   const el = document.getElementById(id);
   if (el && value) el.textContent = value;
@@ -445,11 +447,118 @@ function renderTierControls() {
   submitBtn.disabled = false;
 }
 
+/* ======================= API TRANSPORT =======================
+ * GitHub Pages -> Apps Script transport.
+ * GET/read calls use JSONP because Apps Script ContentService redirects
+ * to script.googleusercontent.com and normal cross-origin fetch can return
+ * an HTML redirect/error document to the browser.
+ * POST/write calls use a hidden form + iframe and receive the result via
+ * window.postMessage, so admin passcodes and attendee data are not put in URLs.
+ */
+function apiGet(params, timeoutMs = 15000) {
+  return new Promise((resolve, reject) => {
+    const callbackName = `__slppJsonp_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+    const script = document.createElement('script');
+    let timer = null;
+
+    const cleanup = () => {
+      if (timer) clearTimeout(timer);
+      try { delete window[callbackName]; } catch (_) { window[callbackName] = undefined; }
+      script.remove();
+    };
+
+    window[callbackName] = (data) => {
+      cleanup();
+      resolve(data);
+    };
+
+    script.onerror = () => {
+      cleanup();
+      reject(new Error('Could not reach the ticket server.'));
+    };
+
+    timer = setTimeout(() => {
+      cleanup();
+      reject(new Error('The ticket server took too long to respond.'));
+    }, timeoutMs);
+
+    const query = new URLSearchParams({ ...params, callback: callbackName });
+    script.src = `${CONFIG.ENDPOINT}?${query.toString()}`;
+    document.head.appendChild(script);
+  });
+}
+
+function apiPost(payload, timeoutMs = 20000) {
+  return new Promise((resolve, reject) => {
+    const requestId = `slpp_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+    const iframeName = `slpp_iframe_${requestId}`;
+    const iframe = document.createElement('iframe');
+    const form = document.createElement('form');
+    let timer = null;
+
+    iframe.name = iframeName;
+    iframe.style.display = 'none';
+    iframe.setAttribute('aria-hidden', 'true');
+
+    form.method = 'POST';
+    form.action = CONFIG.ENDPOINT;
+    form.target = iframeName;
+    form.style.display = 'none';
+
+    const fields = {
+      transport: 'iframe',
+      requestId,
+      origin: window.location.origin,
+      payload: JSON.stringify(payload)
+    };
+
+    Object.entries(fields).forEach(([name, value]) => {
+      const input = document.createElement('input');
+      input.type = 'hidden';
+      input.name = name;
+      input.value = value;
+      form.appendChild(input);
+    });
+
+    const cleanup = () => {
+      if (timer) clearTimeout(timer);
+      window.removeEventListener('message', onMessage);
+      form.remove();
+      setTimeout(() => iframe.remove(), 0);
+    };
+
+    const onMessage = (event) => {
+      // Apps Script response page is served from googleusercontent.com.
+      if (!event.data || event.data.channel !== 'slpp-ticket-api' || event.data.requestId !== requestId) return;
+      cleanup();
+      if (event.data.ok === false && event.data.transportError) {
+        reject(new Error(event.data.error || 'Ticket server request failed.'));
+      } else {
+        resolve(event.data.data);
+      }
+    };
+
+    window.addEventListener('message', onMessage);
+    document.body.appendChild(iframe);
+    document.body.appendChild(form);
+
+    timer = setTimeout(() => {
+      cleanup();
+      reject(new Error('The ticket server took too long to respond.'));
+    }, timeoutMs);
+
+    form.submit();
+  });
+}
+/* ============================================================= */
+
 async function loadEventConfig() {
   try {
-    const url = `${CONFIG.ENDPOINT}?action=eventConfig&chapter=${encodeURIComponent(CONFIG.chapterCode)}&event=${encodeURIComponent(CONFIG.eventId)}`;
-    const res = await fetch(url);
-    const data = await res.json();
+    const data = await apiGet({
+      action: 'eventConfig',
+      chapter: CONFIG.chapterCode,
+      event: CONFIG.eventId
+    });
     if (data.ok) { applyEventConfig(data); } else { throw new Error(data.error || 'Event configuration could not be loaded.'); }
   } catch (err) {
     console.error('Event configuration could not be loaded.', err);
@@ -469,7 +578,6 @@ tierPicker.addEventListener('change', () => {
 });
 
 const form = document.getElementById('claimForm');
-const submitBtn = document.getElementById('submitBtn');
 const errorBox = document.getElementById('errorBox');
 const formCard = document.getElementById('formCard');
 const resultCard = document.getElementById('resultCard');
@@ -515,8 +623,12 @@ async function applyVoucherParams() {
   submitBtn.textContent = 'Loading your voucher…';
 
   try {
-    const res = await fetch(`${CONFIG.ENDPOINT}?action=voucher&token=${encodeURIComponent(token)}&chapter=${encodeURIComponent(CONFIG.chapterCode)}&event=${encodeURIComponent(CONFIG.eventId)}`);
-    const data = await res.json();
+    const data = await apiGet({
+      action: 'voucher',
+      token,
+      chapter: CONFIG.chapterCode,
+      event: CONFIG.eventId
+    });
 
     if (!data.ok) {
       if (data.alreadyClaimed && data.tier && data.serial) {
@@ -583,8 +695,12 @@ async function loadBatch(batchId) {
   batchCard.style.display = 'block';
 
   try {
-    const res = await fetch(`${CONFIG.ENDPOINT}?action=batch&batch=${encodeURIComponent(batchId)}&chapter=${encodeURIComponent(CONFIG.chapterCode)}&event=${encodeURIComponent(CONFIG.eventId)}`);
-    const data = await res.json();
+    const data = await apiGet({
+      action: 'batch',
+      batch: batchId,
+      chapter: CONFIG.chapterCode,
+      event: CONFIG.eventId
+    });
     if (!data.ok) { batchViewError.textContent = data.error || 'This distributor link is not valid.'; batchViewError.style.display = 'block'; return; }
 
     document.getElementById('batchCount').textContent = data.vouchers.length;
@@ -636,7 +752,7 @@ async function loadBatch(batchId) {
           }
           if (sent) {
             try {
-              await fetch(CONFIG.ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: 'dispatchVoucher', chapterCode: CONFIG.chapterCode, eventId: CONFIG.eventId, token: v.token }) });
+              await apiPost({ action: 'dispatchVoucher', chapterCode: CONFIG.chapterCode, eventId: CONFIG.eventId, token: v.token });
             } catch (e) { /* best-effort */ }
             shareBtnEl.disabled = true;
             shareBtnEl.textContent = 'Sent ✓';
@@ -699,12 +815,7 @@ async function submitClaim(payload) {
   submitBtn.textContent = 'Claiming your ticket…';
 
   try {
-    const res = await fetch(CONFIG.ENDPOINT, {
-      method: 'POST',
-      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify(payload)
-    });
-    const data = await res.json();
+    const data = await apiPost(payload);
 
     if (!data.ok) {
       if (data.duplicateWarning) {
@@ -806,25 +917,20 @@ generateBtn.addEventListener('click', async () => {
   generateBtn.textContent = 'Generating…';
 
   try {
-    const res = await fetch(CONFIG.ENDPOINT, {
-      method: 'POST',
-      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify({
-        action: 'adminGenerateVouchers',
-        chapterCode: CONFIG.chapterCode,
-        eventId: CONFIG.eventId,
-        adminPasscode: adminPasscodeValue(),
-        tierCounts: Object.fromEntries(
-          Array.from(document.querySelectorAll('#voucherTierCounts input[data-tier-code]'))
-            .map(input => [input.dataset.tierCode, Number(input.value || 0)])
-        ),
-        openCount: Number(document.getElementById('vOpenCount').value || 0),
-        recipientName: document.getElementById('vRecipientName').value.trim(),
-        recipientPhone: document.getElementById('vRecipientPhone').value.trim(),
-        chapter: document.getElementById('vChapter').value
-      })
+    const data = await apiPost({
+      action: 'adminGenerateVouchers',
+      chapterCode: CONFIG.chapterCode,
+      eventId: CONFIG.eventId,
+      adminPasscode: adminPasscodeValue(),
+      tierCounts: Object.fromEntries(
+        Array.from(document.querySelectorAll('#voucherTierCounts input[data-tier-code]'))
+          .map(input => [input.dataset.tierCode, Number(input.value || 0)])
+      ),
+      openCount: Number(document.getElementById('vOpenCount').value || 0),
+      recipientName: document.getElementById('vRecipientName').value.trim(),
+      recipientPhone: document.getElementById('vRecipientPhone').value.trim(),
+      chapter: document.getElementById('vChapter').value
     });
-    const data = await res.json();
 
     if (!data.ok) {
       generateError.textContent = data.error || 'Could not generate vouchers.';
@@ -872,20 +978,15 @@ checkInSerialBtn.addEventListener('click', async () => {
   checkInSerialBtn.textContent = 'Checking in…';
 
   try {
-    const res = await fetch(CONFIG.ENDPOINT, {
-      method: 'POST',
-      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify({
-        action: 'checkInWithTicket',
-        chapterCode: CONFIG.chapterCode,
-        eventId: CONFIG.eventId,
-        adminPasscode: adminPasscodeValue(),
-        serial,
-        phone: document.getElementById('checkInPhone1').value.trim(),
-        paymentStatus: document.getElementById('checkInPayment1').value
-      })
+    const data = await apiPost({
+      action: 'checkInWithTicket',
+      chapterCode: CONFIG.chapterCode,
+      eventId: CONFIG.eventId,
+      adminPasscode: adminPasscodeValue(),
+      serial,
+      phone: document.getElementById('checkInPhone1').value.trim(),
+      paymentStatus: document.getElementById('checkInPayment1').value
     });
-    const data = await res.json();
 
     if (!data.ok) {
       if (data.alreadyCheckedIn) {
@@ -923,22 +1024,17 @@ walkInBtn.addEventListener('click', async () => {
   walkInBtn.textContent = 'Selling…';
 
   try {
-    const res = await fetch(CONFIG.ENDPOINT, {
-      method: 'POST',
-      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify({
-        action: 'checkInWalkIn',
-        chapterCode: CONFIG.chapterCode,
-        eventId: CONFIG.eventId,
-        adminPasscode: adminPasscodeValue(),
-        fullName,
-        chapter: document.getElementById('wiChapter').value,
-        tier: document.getElementById('wiTier').value,
-        phone: document.getElementById('wiPhone').value.trim(),
-        paymentStatus: document.getElementById('wiPayment').value
-      })
+    const data = await apiPost({
+      action: 'checkInWalkIn',
+      chapterCode: CONFIG.chapterCode,
+      eventId: CONFIG.eventId,
+      adminPasscode: adminPasscodeValue(),
+      fullName,
+      chapter: document.getElementById('wiChapter').value,
+      tier: document.getElementById('wiTier').value,
+      phone: document.getElementById('wiPhone').value.trim(),
+      paymentStatus: document.getElementById('wiPayment').value
     });
-    const data = await res.json();
 
     if (!data.ok) {
       walkInError.textContent = data.error || 'Could not sell/check in this guest.';
@@ -975,12 +1071,12 @@ viewSummaryBtn.addEventListener('click', async () => {
   viewSummaryBtn.textContent = 'Loading…';
 
   try {
-    const res = await fetch(CONFIG.ENDPOINT, {
-      method: 'POST',
-      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify({ action: 'viewCheckInSummary', chapterCode: CONFIG.chapterCode, eventId: CONFIG.eventId, adminPasscode: adminPasscodeValue() })
+    const data = await apiPost({
+      action: 'viewCheckInSummary',
+      chapterCode: CONFIG.chapterCode,
+      eventId: CONFIG.eventId,
+      adminPasscode: adminPasscodeValue()
     });
-    const data = await res.json();
 
     if (!data.ok) {
       summaryError.textContent = data.error || 'Could not load summary.';
@@ -1010,6 +1106,6 @@ viewSummaryBtn.addEventListener('click', async () => {
   }
 });
 </script>
-<!-- deployment refresh 2026-08-08 -->
+<!-- regional transport v6 2026-08-08 -->
 </body>
 </html>
