@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Minutes of Meeting — 8 August 2026 — Unique Ambassadors</title>
+<meta name="description" content="Minutes of the Unique Ambassadors meeting held Monday, 8 August 2026, in preparation for the funeral of our brother, Ansinu Keleti Lamin (AKL).">
+
+<!-- Open Graph / WhatsApp preview -->
+<meta property="og:type" content="article">
+<meta property="og:title" content="Minutes of Meeting — Monday, 8 August 2026">
+<meta property="og:description" content="Unique Ambassadors — In preparation for the funeral of our brother, Ansinu Keleti Lamin (AKL). Tap to read the full minutes.">
+<meta property="og:image" content="https://greenprofessionals.github.io/uniqueambassadors-og-2026-08-08.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:url" content="https://greenprofessionals.github.io/uniqueambassadors-minutes-2026-08-08.html">
+<meta property="og:site_name" content="Unique Ambassadors">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Minutes of Meeting — Monday, 8 August 2026">
+<meta name="twitter:description" content="Unique Ambassadors — In preparation for the funeral of our brother, Ansinu Keleti Lamin (AKL).">
+<meta name="twitter:image" content="https://greenprofessionals.github.io/uniqueambassadors-og-2026-08-08.png">
+
+<link rel="icon" href="uniqueambassadors-logo-2026-08-08.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --teal: #102E2E;
+    --teal-2: #163B3B;
+    --gold: #C49444;
+    --gold-soft: #DDBB84;
+    --cream: #F8F4E9;
+    --ink: #262420;
+    --ink-soft: #55524A;
+    --rule: #DCD3BC;
+    --red: #B03A2E;
+  }
+
+  *{ box-sizing:border-box; }
+  html{ scroll-behavior:smooth; }
+
+  body{
+    margin:0;
+    background:var(--cream);
+    color:var(--ink);
+    font-family:'EB Garamond', Georgia, serif;
+    font-size:19px;
+    line-height:1.7;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation:none !important; transition:none !important; }
+  }
+
+  a{ color:inherit; }
+
+  /* ---------- HERO ---------- */
+  .hero{
+    position:relative;
+    background:
+      radial-gradient(ellipse 900px 500px at 18% 20%, rgba(196,148,68,0.10), transparent 60%),
+      linear-gradient(180deg, var(--teal) 0%, var(--teal-2) 100%);
+    color:var(--cream);
+    padding:72px 24px 96px;
+    text-align:center;
+    overflow:hidden;
+  }
+
+  .hero::after{
+    content:"";
+    position:absolute;
+    left:0; right:0; bottom:0;
+    height:64px;
+    background:linear-gradient(180deg, transparent, var(--cream));
+    pointer-events:none;
+  }
+
+  .hero-inner{
+    max-width:640px;
+    margin:0 auto;
+    position:relative;
+    z-index:1;
+    animation: riseIn 900ms ease-out both;
+  }
+
+  @keyframes riseIn{
+    from{ opacity:0; transform:translateY(14px); }
+    to{ opacity:1; transform:translateY(0); }
+  }
+
+  .crest{
+    width:126px;
+    height:126px;
+    border-radius:22px;
+    background:#FCFAF3;
+    border:2px solid var(--gold);
+    box-shadow:0 0 0 6px rgba(196,148,68,0.12), 0 18px 40px rgba(0,0,0,0.35);
+    margin:0 auto 28px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    overflow:hidden;
+    padding:8px;
+  }
+  .crest img{ width:100%; height:100%; object-fit:contain; display:block; }
+
+  .eyebrow{
+    font-family:'Playfair Display', serif;
+    letter-spacing:0.22em;
+    text-transform:uppercase;
+    font-size:13px;
+    color:var(--gold-soft);
+    margin:0 0 6px;
+  }
+
+  .org-sub{
+    font-size:12.5px;
+    letter-spacing:0.18em;
+    text-transform:uppercase;
+    color:#A9BCB9;
+    margin:0 0 34px;
+  }
+
+  .hero h1{
+    font-family:'Playfair Display', serif;
+    font-weight:600;
+    font-size:clamp(26px, 5vw, 38px);
+    line-height:1.25;
+    margin:0 0 6px;
+    color:var(--cream);
+  }
+
+  .hero .dates{
+    font-family:'Playfair Display', serif;
+    font-style:italic;
+    font-size:19px;
+    color:var(--gold-soft);
+    margin:10px 0 28px;
+  }
+
+  .flame-rule{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:14px;
+    margin:0 auto 30px;
+    max-width:280px;
+  }
+  .flame-rule .line{ flex:1; height:1px; background:linear-gradient(90deg, transparent, var(--gold), transparent); }
+  .flame-rule svg{ width:20px; height:20px; flex-shrink:0; }
+
+  .hero p.lede{
+    font-size:17px;
+    color:#D6E0DD;
+    max-width:480px;
+    margin:0 auto;
+  }
+
+  .cta{
+    display:inline-flex;
+    align-items:center;
+    gap:10px;
+    margin-top:34px;
+    padding:13px 30px;
+    background:var(--gold);
+    color:var(--teal);
+    text-decoration:none;
+    font-family:'Playfair Display', serif;
+    font-weight:600;
+    font-size:15px;
+    letter-spacing:0.03em;
+    border-radius:3px;
+    transition: transform 180ms ease, box-shadow 180ms ease;
+    box-shadow:0 10px 24px rgba(0,0,0,0.25);
+  }
+  .cta:hover{ transform:translateY(-2px); box-shadow:0 14px 28px rgba(0,0,0,0.3); }
+  .cta svg{ width:16px; height:16px; }
+
+  /* ---------- DOCUMENT ---------- */
+  .doc{
+    max-width:700px;
+    margin:-40px auto 0;
+    background:#FFFEFA;
+    border:1px solid var(--rule);
+    border-radius:2px;
+    box-shadow:0 30px 60px -20px rgba(16,46,46,0.25);
+    padding:52px 44px 60px;
+    position:relative;
+    z-index:2;
+  }
+
+  @media (max-width:560px){
+    .doc{ padding:36px 22px 44px; margin-left:14px; margin-right:14px; }
+    .hero{ padding:56px 18px 88px; }
+  }
+
+  .doc-heading{
+    text-align:center;
+    margin-bottom:36px;
+    padding-bottom:30px;
+    border-bottom:1px solid var(--rule);
+  }
+  .doc-heading .kicker{
+    font-family:'Playfair Display', serif;
+    text-transform:uppercase;
+    letter-spacing:0.2em;
+    font-size:12px;
+    color:var(--red);
+    margin-bottom:10px;
+  }
+  .doc-heading h2{
+    font-family:'Playfair Display', serif;
+    font-weight:700;
+    font-size:26px;
+    margin:0 0 8px;
+    color:var(--teal);
+  }
+  .doc-heading .meta{
+    font-size:15px;
+    color:var(--ink-soft);
+    font-style:italic;
+  }
+
+  .attendance{
+    text-align:center;
+    font-size:16px;
+    line-height:1.9;
+    color:var(--ink-soft);
+    margin-bottom:44px;
+    padding-bottom:30px;
+    border-bottom:1px solid var(--rule);
+  }
+  .attendance .att-label{
+    display:block;
+    font-family:'Playfair Display', serif;
+    font-style:italic;
+    font-size:13px;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    color:var(--gold);
+    margin-bottom:12px;
+  }
+  .attendance .dot{ color:var(--gold); font-weight:700; margin:0 8px; }
+  .attendance .note{ font-style:italic; color:#8A8578; }
+
+  section.item{
+    margin-bottom:38px;
+  }
+  section.item:last-of-type{ margin-bottom:0; }
+
+  .item-label{
+    display:flex;
+    align-items:baseline;
+    gap:12px;
+    margin-bottom:12px;
+  }
+  .item-label .glyph{
+    width:9px; height:9px;
+    background:var(--gold);
+    transform:rotate(45deg);
+    flex-shrink:0;
+  }
+  .item-label h3{
+    font-family:'Playfair Display', serif;
+    font-weight:600;
+    font-style:italic;
+    font-size:20px;
+    color:var(--teal);
+    margin:0;
+  }
+
+  .item ul{
+    margin:0;
+    padding-left:22px;
+  }
+  .item li{
+    margin-bottom:9px;
+    color:var(--ink);
+  }
+  .item li:last-child{ margin-bottom:0; }
+  .item li::marker{ color:var(--gold); }
+  .item li strong{ color:var(--teal); }
+
+  .closing{
+    text-align:center;
+    margin-top:50px;
+    padding-top:36px;
+    border-top:1px solid var(--rule);
+  }
+  .closing .next{
+    font-family:'Playfair Display', serif;
+    font-style:italic;
+    font-size:19px;
+    color:var(--teal);
+    margin-bottom:6px;
+  }
+  .closing .org{
+    font-size:14px;
+    letter-spacing:0.06em;
+    color:var(--ink-soft);
+    margin-top:14px;
+  }
+
+  footer{
+    text-align:center;
+    padding:40px 20px 60px;
+    color:#9CA3AE;
+    font-size:13px;
+    letter-spacing:0.04em;
+  }
+  footer .fname{
+    color:var(--teal);
+    font-family:'Playfair Display', serif;
+    font-style:italic;
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-inner">
+    <div class="crest"><img src="uniqueambassadors-logo-2026-08-08.png" alt="Unique Ambassadors crest"></div>
+    <p class="eyebrow">Unique Ambassadors</p>
+    <p class="org-sub">Est. 10 · 1986 &nbsp;·&nbsp; Funeral Planning Committee</p>
+    <h1>Minutes of Meeting</h1>
+    <p class="dates">Monday, 8 August 2026 &nbsp;·&nbsp; 9:00 PM (GMT)</p>
+    <div class="flame-rule">
+      <span class="line"></span>
+      <svg viewBox="0 0 24 24" fill="none"><path d="M12 2c1 3-2 4-2 7a3 3 0 0 0 6 0c0-1-1-2-1-3 2 1 3 4 3 6a6 6 0 0 1-12 0c0-4 3-6 3-9 1 1 2 1 3-1z" fill="#C49444"/></svg>
+      <span class="line"></span>
+    </div>
+    <p class="lede">In preparation for the funeral of our brother, Ansinu Keleti Lamin (AKL).</p>
+    <a class="cta" href="#minutes">
+      Read the Minutes
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+    </a>
+  </div>
+</div>
+
+<main class="doc" id="minutes">
+
+  <div class="doc-heading">
+    <p class="kicker">Minutes of Meeting</p>
+    <h2>Unique Ambassadors — Funeral Planning Committee</h2>
+    <p class="meta">Monday, 8 August 2026, 9:00 PM (GMT)</p>
+  </div>
+
+  <div class="attendance">
+    <span class="att-label">Attendance</span>
+    President, Brother Jaka Jusu Ngobeh<span class="dot">&bull;</span>Secretary General, Brother Fomba Kassoh<span class="dot">&bull;</span>Brother Salim Massaquio<span class="dot">&bull;</span>Dr. Kenneh<span class="dot">&bull;</span>Chairman Kekeh Sahr Lamin<span class="dot">&bull;</span>Brother Blyden<span class="dot">&bull;</span>Brother Kemoh<span class="dot">&bull;</span>Brother Patrice<span class="dot">&bull;</span>Dr. Mohamed<span class="dot">&bull;</span>Brother Idriss Lamin<span class="dot">&bull;</span>Brother Yokorbor<span class="dot">&bull;</span><span class="note">Brother Abdulai (joined, then called out sick)</span><span class="dot">&bull;</span><span class="note">Brother Gadiru (joined, left early)</span><span class="dot">&bull;</span><span class="note">Brother Lahai Amara (joined, left early)</span>
+  </div>
+
+  <section class="item">
+    <div class="item-label"><span class="glyph"></span><h3>Opening</h3></div>
+    <ul>
+      <li>The meeting opened with 30 seconds of silent prayer.</li>
+      <li>The President, Brother Jaka Jusu Ngobeh, gave opening remarks, thanking the brothers who have already contributed and urging those still outstanding to complete their pledges so the group can move forward.</li>
+    </ul>
+  </section>
+
+  <section class="item">
+    <div class="item-label"><span class="glyph"></span><h3>Decisions Made</h3></div>
+    <ul>
+      <li>Total pledges are expected to reach around Le73,000; available funds are sufficient to settle Dr. Kenneh's food/catering request of about Le39,000.</li>
+      <li>Chairman Kekeh Sahr Lamin's pledge was revised from the recorded Le10,000 to his intended Le3,000, and has been fully honored.</li>
+      <li>Proceed with one cow for now; a second will only be considered if funds remain after all other essential items are covered.</li>
+      <li>Banners confirmed at seven in total — two for up-country and five for vehicles in Kailahun, pending final confirmation.</li>
+      <li>A new mini-bus has been secured for the trip, available for collection on Thursday, with a driver already arranged.</li>
+      <li>The souvenir/order-of-service booklet will be kept simple and cost-effective — a modest number of hard copies for the church, plus an electronic (PDF) version shared on the forum for those without a hard copy. Target: finalized by Wednesday.</li>
+      <li>The booklet will not carry lengthy individual tributes — maybe only three brief statements: one from Unique Ambassadors, one from the family, and one from the school.</li>
+      <li>The match pass will proceed with the coffin from the school to the church, then from the church to Torgbombu cemetery, as requested by Methodist Secondary School and the old boys.</li>
+      <li>Students will assemble at the school by 8:00 a.m., with the procession departing for the church by approximately 9:30 a.m.; laying-out will take place at the school, and possibly also at the church.</li>
+      <li>Prior commitments (food, transportation, and other essentials already promised) will be honored regardless of the funding shortfall.</li>
+    </ul>
+  </section>
+
+  <section class="item">
+    <div class="item-label"><span class="glyph"></span><h3>Outstanding Issues</h3></div>
+    <ul>
+      <li>Full costing for stickers and pinups not yet finalized (banner count is confirmed; pricing across all three items still pending).</li>
+      <li>Discrepancy between individual payment records and the treasurer's report needs reconciliation.</li>
+      <li>There may be a funding shortfall against the full remaining budget; brothers may need to contribute again.</li>
+      <li>Availability and cost of a marching band not yet confirmed — Methodist Secondary School no longer has its own band; status of the National Secondary School's band still unknown.</li>
+      <li>Whether a private/outside band will be needed, and at what cost, still to be decided; brothers may consider hiring bands from out of town.</li>
+      <li>Departure time, pickup locations, and full transportation itinerary for travelers from Freetown not yet finalized.</li>
+    </ul>
+  </section>
+
+  <section class="item">
+    <div class="item-label"><span class="glyph"></span><h3>Tasks Assigned</h3></div>
+    <ul>
+      <li><strong>Treasurer, Brother Lahai Amara, and Financial Secretary, Brother Lahai Gbessay</strong> — reconcile payment records and confirm accurate outstanding balances.</li>
+      <li><strong>Brother Salim Massaquio</strong> — finalize and share costing for stickers and pinups via the forum; share photos/materials for the booklet with Brother Fomba Kassoh.</li>
+      <li><strong>Secretary General, Brother Fomba Kassoh</strong> — reorganize and finalize the order-of-service booklet using materials received from Brother Salim Massaquio and Dr. Kenneh.</li>
+      <li><strong>EPD</strong> — report back on the availability and cost of school marching bands (Methodist and National); also provide cost and availability of a private band.</li>
+      <li><strong>President, Brother Jaka Jusu Ngobeh</strong> — follow up directly with the relevant band contact if needed.</li>
+      <li><strong>Dr. Kenneh</strong> — report with departure time, pickup locations, and full transportation itinerary details after the family meeting tomorrow.</li>
+      <li><strong>All brothers</strong> — review prior assignments and come prepared with updates at the general meeting; be ready to contribute further if a shortfall remains.</li>
+    </ul>
+  </section>
+
+  <section class="item">
+    <div class="item-label"><span class="glyph"></span><h3>Motion to Adjourn</h3></div>
+    <ul>
+      <li>A motion was made to adjourn the meeting until the general meeting, moved by the Secretary General, Brother Fomba Kassoh, and seconded by Dr. Kenneh.</li>
+    </ul>
+  </section>
+
+  <div class="closing">
+    <p class="next">Next Meeting: General meeting, 9 August 2026 at 9:00 p.m.</p>
+    <p class="org">Unique Ambassadors &nbsp;·&nbsp; Est. 10, 1986</p>
+  </div>
+
+</main>
+
+<footer>
+  <span class="fname">Unique Ambassadors</span> &nbsp;·&nbsp; Funeral Planning Committee
+</footer>
+
+</body>
+</html>
