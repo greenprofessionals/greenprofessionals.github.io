@@ -1,0 +1,307 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#0c5a37" />
+  <meta name="description" content="Airport pickup and travel information form for guests attending the SLPP North America Women's Council Annual Conference and Fundraising Dinner." />
+  <title>Airport Pickup & Travel Information</title>
+  <link rel="canonical" href="https://greenprofessionals.github.io/airport-pickup/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="SLPP North America Women's Council" />
+  <meta property="og:title" content="Airport Pickup & Travel Information | SLPPNA Women's Council" />
+  <meta property="og:description" content="Flying in for the SLPP North America Women's Council Annual Conference & Fundraising Dinner? Submit your travel details for coordinated airport pickup." />
+  <meta property="og:url" content="https://greenprofessionals.github.io/airport-pickup/" />
+  <meta property="og:image" content="https://greenprofessionals.github.io/airport-pickup/assets/og-airport-pickup.jpg" />
+  <meta property="og:image:secure_url" content="https://greenprofessionals.github.io/airport-pickup/assets/og-airport-pickup.jpg" />
+  <meta property="og:image:type" content="image/jpeg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="SLPP North America Women's Council Airport Pickup & Travel Information" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Airport Pickup & Travel Information | SLPPNA Women's Council" />
+  <meta name="twitter:description" content="Submit your travel details for coordinated airport pickup for the September 26, 2026 conference and fundraising dinner." />
+  <meta name="twitter:image" content="https://greenprofessionals.github.io/airport-pickup/assets/og-airport-pickup.jpg" />
+
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">SLPP</div>
+        <div class="brand-text">
+          <strong>North America Women's Council</strong>
+          <span>Airport Pickup & Travel Coordination</span>
+        </div>
+      </div>
+      <a class="header-link" href="#travel-form">Submit Travel Info</a>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="hero-inner">
+      <div>
+        <span class="eyebrow">Guest Transportation Coordination</span>
+        <h1>Airport Pickup & Travel Information</h1>
+        <p>
+          Guests flying in for the <strong id="eventName">SLPP North America Women's Council Annual Conference & Fundraising Dinner</strong>
+          are requested to submit their complete itinerary so the transportation team can coordinate an efficient airport pickup.
+        </p>
+        <div class="hero-meta">
+          <span class="meta-pill" id="eventDate">September 26, 2026</span>
+          <span class="meta-pill" id="hostName">Washington D.C. Metro Chapter</span>
+          <span class="meta-pill">Washington, D.C. Area Airports</span>
+        </div>
+      </div>
+      <figure class="hero-card">
+        <img src="assets/event-flyer.jpg" alt="Official event flyer" />
+        <figcaption>Official event information</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <main>
+    <div class="notice">
+      <strong>Please submit by <span id="deadline">September 23, 2026</span>.</strong>
+      Use one submission for each distinct flight itinerary. If your airline changes your flight, airport, or arrival time after submission, please submit the form again and write “UPDATED ITINERARY” in Transportation Notes.
+    </div>
+
+    <div class="layout">
+      <section class="form-card" id="travel-form">
+        <div id="endpointWarning" class="notice hidden">
+          <strong>Administrator setup required:</strong> the Google Apps Script submission URL has not yet been added to <code>config.js</code>.
+        </div>
+
+        <form id="travelForm" novalidate>
+          <fieldset class="section">
+            <legend>1. Traveler Information</legend>
+            <div class="grid">
+              <div class="field">
+                <label for="fullName">Full Name <span class="req">*</span></label>
+                <input id="fullName" name="full_name" autocomplete="name" required />
+              </div>
+              <div class="field">
+                <label for="chapter">Chapter / Region <span class="req">*</span></label>
+                <input id="chapter" name="chapter_region" placeholder="e.g., New York Chapter" required />
+              </div>
+              <div class="field">
+                <label for="mobile">Mobile / WhatsApp Number <span class="req">*</span></label>
+                <input id="mobile" name="mobile_whatsapp" type="tel" autocomplete="tel" placeholder="Include country code if outside the U.S." required />
+              </div>
+              <div class="field">
+                <label for="email">Email Address <span class="req">*</span></label>
+                <input id="email" name="email" type="email" autocomplete="email" required />
+              </div>
+              <div class="field">
+                <label for="additionalTravelerCount">Additional Travelers With You <span class="req">*</span></label>
+                <select id="additionalTravelerCount" name="additional_traveler_count" required>
+                  <option value="0">None</option>
+                  <option value="1">1</option><option value="2">2</option><option value="3">3</option>
+                  <option value="4">4</option><option value="5">5</option><option value="6">6+</option>
+                </select>
+              </div>
+              <div class="field full hidden" id="additionalNamesWrap">
+                <label for="additionalTravelerNames">Names of Additional Travelers <span class="req">*</span></label>
+                <textarea id="additionalTravelerNames" name="additional_traveler_names" placeholder="List each passenger's full name"></textarea>
+              </div>
+            </div>
+          </fieldset>
+
+          <fieldset class="section">
+            <legend>2. Arrival Flight</legend>
+            <p class="section-note">Enter the flight that actually lands in the Washington, D.C. / Baltimore area.</p>
+            <div class="grid">
+              <div class="field">
+                <label for="arrivalDate">Arrival Date <span class="req">*</span></label>
+                <input id="arrivalDate" name="arrival_date" type="date" required />
+              </div>
+              <div class="field">
+                <label for="arrivalAirport">Arrival Airport <span class="req">*</span></label>
+                <select id="arrivalAirport" name="arrival_airport" required>
+                  <option value="">Select airport</option>
+                  <option>BWI — Baltimore/Washington International</option>
+                  <option>DCA — Ronald Reagan Washington National</option>
+                  <option>IAD — Washington Dulles International</option>
+                  <option>Other</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="airline">Airline <span class="req">*</span></label>
+                <input id="airline" name="airline" placeholder="e.g., Delta, United, Southwest" required />
+              </div>
+              <div class="field">
+                <label for="flightNumber">Flight Number <span class="req">*</span></label>
+                <input id="flightNumber" name="flight_number" placeholder="e.g., DL 1234" required />
+              </div>
+              <div class="field">
+                <label for="departureCity">Departure City / Airport <span class="req">*</span></label>
+                <input id="departureCity" name="departure_city_airport" placeholder="e.g., JFK — New York" required />
+              </div>
+              <div class="field">
+                <label for="arrivalTime">Scheduled Arrival Time <span class="req">*</span></label>
+                <input id="arrivalTime" name="scheduled_arrival_time" type="time" required />
+              </div>
+              <div class="field">
+                <label for="arrivalTerminal">Arrival Terminal</label>
+                <input id="arrivalTerminal" name="arrival_terminal" placeholder="If known" />
+              </div>
+              <div class="field">
+                <label for="confirmationNumber">Airline Confirmation Number</label>
+                <input id="confirmationNumber" name="airline_confirmation_number" placeholder="Optional" />
+                <div class="help">Optional. Do not enter airline account passwords or payment information.</div>
+              </div>
+            </div>
+          </fieldset>
+
+          <fieldset class="section">
+            <legend>3. Luggage & Drop-Off</legend>
+            <div class="grid">
+              <div class="field">
+                <label for="checkedBags">Will You Have Checked Luggage? <span class="req">*</span></label>
+                <select id="checkedBags" name="checked_bags" required>
+                  <option value="">Select</option>
+                  <option>Yes</option>
+                  <option>No</option>
+                </select>
+              </div>
+              <div class="field hidden" id="bagCountWrap">
+                <label for="checkedBagCount">Number of Checked Bags <span class="req">*</span></label>
+                <input id="checkedBagCount" name="checked_bag_count" type="number" min="0" max="20" />
+              </div>
+              <div class="field">
+                <label for="hotelChoice">Drop-Off / Accommodation <span class="req">*</span></label>
+                <select id="hotelChoice" name="dropoff_choice" required>
+                  <option value="Metro Points Hotel">Metro Points Hotel</option>
+                  <option value="Other">Other hotel / private address</option>
+                </select>
+              </div>
+              <div class="field hidden" id="otherHotelWrap">
+                <label for="otherHotel">Other Hotel / Address <span class="req">*</span></label>
+                <input id="otherHotel" name="other_dropoff_address" autocomplete="street-address" />
+              </div>
+              <div class="field full">
+                <label for="mobilityNeeds">Mobility / Accessibility Needs</label>
+                <textarea id="mobilityNeeds" name="mobility_accessibility_needs" placeholder="Share only information the transportation team needs to arrange appropriate assistance or vehicle access."></textarea>
+              </div>
+            </div>
+          </fieldset>
+
+          <fieldset class="section">
+            <legend>4. Return Transportation</legend>
+            <div class="grid">
+              <div class="field full">
+                <label for="returnTransport">Do You Need Transportation Back to the Airport? <span class="req">*</span></label>
+                <select id="returnTransport" name="return_transport_needed" required>
+                  <option value="">Select</option>
+                  <option>Yes</option>
+                  <option>No</option>
+                  <option>Not sure yet</option>
+                </select>
+              </div>
+            </div>
+            <div id="returnSection" class="grid hidden" style="margin-top:18px">
+              <div class="field">
+                <label for="departureDate">Departure Date <span class="req">*</span></label>
+                <input id="departureDate" name="departure_date" type="date" data-return-required="true" />
+              </div>
+              <div class="field">
+                <label for="departureAirport">Departure Airport <span class="req">*</span></label>
+                <select id="departureAirport" name="departure_airport" data-return-required="true">
+                  <option value="">Select airport</option>
+                  <option>BWI — Baltimore/Washington International</option>
+                  <option>DCA — Ronald Reagan Washington National</option>
+                  <option>IAD — Washington Dulles International</option>
+                  <option>Other</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="departureAirline">Airline <span class="req">*</span></label>
+                <input id="departureAirline" name="departure_airline" data-return-required="true" />
+              </div>
+              <div class="field">
+                <label for="departureFlight">Flight Number <span class="req">*</span></label>
+                <input id="departureFlight" name="departure_flight_number" data-return-required="true" />
+              </div>
+              <div class="field">
+                <label for="departureTime">Scheduled Departure Time <span class="req">*</span></label>
+                <input id="departureTime" name="scheduled_departure_time" type="time" data-return-required="true" />
+              </div>
+            </div>
+          </fieldset>
+
+          <fieldset class="section">
+            <legend>5. Contact & Transportation Notes</legend>
+            <div class="grid">
+              <div class="field">
+                <label for="emergencyName">Emergency / Backup Contact Name</label>
+                <input id="emergencyName" name="emergency_contact_name" />
+              </div>
+              <div class="field">
+                <label for="emergencyPhone">Emergency / Backup Contact Phone</label>
+                <input id="emergencyPhone" name="emergency_contact_phone" type="tel" />
+              </div>
+              <div class="field full">
+                <label for="notes">Transportation Notes</label>
+                <textarea id="notes" name="transportation_notes" placeholder="Examples: traveling with a child, oversized luggage, updated itinerary, special pickup coordination."></textarea>
+              </div>
+            </div>
+          </fieldset>
+
+          <fieldset class="section">
+            <legend>6. Communication Preferences</legend>
+            <p class="section-help">Choose how the transportation team may contact you about airport pickup and travel logistics. SMS and WhatsApp are sent manually, one traveler at a time by an authorized coordinator.</p>
+            <div class="message-options">
+              <label class="consent"><input type="checkbox" name="email_consent" value="Yes" checked /><span><strong>Email</strong> — confirmations and detailed transportation updates.</span></label>
+              <label class="consent"><input type="checkbox" name="sms_consent" value="Yes" /><span><strong>SMS/Text</strong> — time-sensitive pickup and driver updates. Message and data rates may apply.</span></label>
+              <label class="consent"><input type="checkbox" name="whatsapp_consent" value="Yes" /><span><strong>WhatsApp</strong> — pickup and driver coordination through WhatsApp.</span></label>
+            </div>
+            <label class="consent messaging-consent">
+              <input type="checkbox" name="messaging_consent" value="Yes" required />
+              <span>I authorize the transportation team to contact me individually through the communication methods I selected above for airport pickup and travel logistics. SMS and WhatsApp messages are sent manually one-to-one, not as automated or group messages.</span>
+            </label>
+          </fieldset>
+
+          <label class="consent">
+            <input type="checkbox" name="accuracy_consent" value="Yes" required />
+            <span>I confirm that the information provided is accurate and may be used by authorized transportation coordinators solely to coordinate my airport pickup, drop-off, and related travel logistics. Necessary pickup details may be shared only with my assigned driver.</span>
+          </label>
+
+          <div class="submit-row">
+            <button class="submit-btn" id="submitBtn" type="submit">Submit Travel Information</button>
+            <span id="formStatus" class="status" aria-live="polite"></span>
+          </div>
+        </form>
+      </section>
+
+      <aside class="sidebar">
+        <section class="side-card">
+          <h3>Event Hotel</h3>
+          <p><strong id="hotelName">Metro Points Hotel</strong><br /><span id="hotelAddress">8500 Annapolis Rd, New Carrollton, MD</span></p>
+        </section>
+        <section class="side-card">
+          <h3>Before You Submit</h3>
+          <ul>
+            <li>Use your final arriving flight number.</li>
+            <li>Include every passenger riding with you.</li>
+            <li>Tell us if checked luggage affects vehicle space.</li>
+            <li>Resubmit if the airline changes your itinerary.</li>
+          </ul>
+        </section>
+        <section class="side-card">
+          <h3>Transportation Team</h3>
+          <p id="coordinator">Transportation Coordination Team</p>
+          <p>Drivers should receive only the travel details necessary for their assigned pickup.</p>
+        </section>
+      </aside>
+    </div>
+  </main>
+
+  <footer class="footer">
+    Travel information is collected for event transportation coordination and should remain private to authorized coordinators. Assigned drivers should receive only the minimum details necessary for their assigned pickup. SMS and WhatsApp outreach is manual and one-to-one. Do not submit passwords, payment card information, or unrelated sensitive information.
+  </footer>
+
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
