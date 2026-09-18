@@ -1,6 +1,6 @@
 window.AIRPORT_PICKUP_CONFIG = {
   // Replace after deploying the Google Apps Script web app.
-  scriptUrl: "PASTE_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE",
+  scriptUrl: "https://script.google.com/macros/s/AKfycbxA7bnzi7EzRpgsM0vHXA_0uHdkqaVoTClnZJn2gOZWxDFnuBJsW6egtxXumtVgISBn/exec",
 
   eventName: "SLPP North America Women's Council Annual Conference & Fundraising Dinner",
   eventDate: "September 26, 2026",
