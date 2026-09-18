@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0c5a37" />
+  <meta name="robots" content="noindex,nofollow,noarchive" />
+  <meta name="description" content="Private transportation coordinator view for SLPP North America Women's Council airport pickup logistics." />
+  <title>Coordinator View | Airport Pickup</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body class="coordinator-page">
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">SLPP</div>
+        <div class="brand-text"><strong>Women's Council</strong><span>Transportation Coordination</span></div>
+      </div>
+      <a class="header-link" href="index.html">Travel Form</a>
+    </div>
+  </header>
+
+  <main class="coordinator-main">
+    <section class="coord-hero">
+      <span class="eyebrow">Authorized coordinators only</span>
+      <h1>Traveler Coordination</h1>
+      <p>Choose a chapter to see its travelers. The mobile view puts the traveler's name, phone number, airport, terminal, and airline at your fingertips for direct pickup coordination.</p>
+    </section>
+
+    <section id="loginCard" class="coord-login card-panel">
+      <div class="lock-icon" aria-hidden="true">🔒</div>
+      <div>
+        <h2>Coordinator Login</h2>
+        <p>Enter the coordinator access code. It is verified by the Google Apps Script backend and exchanged for a temporary session token.</p>
+      </div>
+      <form id="loginForm" class="coord-login-form">
+        <label for="accessCode">Access Code</label>
+        <div class="access-row">
+          <input id="accessCode" type="password" autocomplete="current-password" required />
+          <button type="submit" class="submit-btn">Open Board</button>
+        </div>
+        <span id="loginStatus" class="status" aria-live="polite"></span>
+      </form>
+    </section>
+
+    <section id="dashboard" class="hidden">
+      <div class="coord-toolbar card-panel">
+        <div class="field">
+          <label for="chapterFilter">Chapter / Region</label>
+          <select id="chapterFilter"><option value="">All Chapters / Regions</option></select>
+        </div>
+        <div class="field">
+          <label for="travelerSearch">Find Traveler</label>
+          <input id="travelerSearch" type="search" inputmode="search" placeholder="Search traveler name" />
+        </div>
+        <div class="coord-toolbar-actions">
+          <button id="refreshBtn" class="secondary-btn" type="button">Refresh</button>
+          <button id="lockBtn" class="secondary-btn" type="button">Lock</button>
+        </div>
+      </div>
+
+      <div class="coord-kpis">
+        <div class="kpi-card"><span>Travelers</span><strong id="kpiTotal">0</strong></div>
+        <div class="kpi-card"><span>Arrivals</span><strong id="kpiParties">0</strong></div>
+        <div class="kpi-card"><span>Assigned</span><strong id="kpiAssigned">0</strong></div>
+        <div class="kpi-card"><span>Picked Up</span><strong id="kpiPickedUp">0</strong></div>
+      </div>
+
+      <section class="card-panel traveler-panel">
+        <div class="panel-heading">
+          <div><h2 id="travelerHeading">Travelers</h2><p id="travelerSubheading">Choose a chapter or search by name.</p></div>
+        </div>
+        <div id="travelerList" class="traveler-list"></div>
+        <div id="emptyState" class="empty-state hidden">No travelers match this selection.</div>
+      </section>
+
+      <div class="privacy-strip"><strong>Coordinator visibility:</strong> name, phone, travel itinerary and pickup-operational details only. Email, emergency contacts, accessibility information and private coordinator notes are not returned to this page.</div>
+    </section>
+  </main>
+
+  <div id="travelerModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-backdrop" data-close-modal="true"></div>
+    <article class="modal-card">
+      <button class="modal-close" id="modalClose" aria-label="Close">×</button>
+      <div class="modal-title-row">
+        <div><span id="modalChapter" class="eyebrow"></span><h2 id="modalTitle"></h2></div>
+        <span id="modalStatus" class="status-pill"></span>
+      </div>
+      <div id="contactActions" class="contact-actions"></div>
+      <div id="modalBody" class="detail-grid"></div>
+    </article>
+  </div>
+
+  <footer class="footer">Private operational view for authorized transportation coordinators. Do not screenshot or redistribute traveler information outside the transportation team.</footer>
+  <script src="config.js"></script>
+  <script src="coordinator.js"></script>
+</body>
+</html>
