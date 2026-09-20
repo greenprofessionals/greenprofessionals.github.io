@@ -465,3 +465,22 @@ main { max-width: 1120px; margin: 0 auto; padding: 34px 20px 70px; }
     padding: 14px;
   }
 }
+
+
+/* v15 - Driver assignment controls */
+.assign-driver-btn{background:#fff7dc;border-color:#ead79c;color:#6c5200;cursor:pointer}
+.driver-assignment-panel{margin-top:18px;padding-top:18px;border-top:1px solid #e3ece6}
+.assignment-heading{display:grid;gap:10px;margin-bottom:14px}
+.assignment-heading h3{margin:4px 0 0;color:#173326;font-size:1.18rem}
+.driver-contact-actions{display:flex;gap:7px;flex-wrap:wrap}
+.driver-assignment-form{display:grid;gap:14px}
+.assignment-grid{display:grid;grid-template-columns:1fr;gap:12px}
+.assignment-actions{display:grid;grid-template-columns:1fr;gap:9px;align-items:center}
+.assignment-actions .submit-btn,.assignment-actions .secondary-btn{width:100%}
+@media(min-width:700px){
+  .assignment-heading{grid-template-columns:1fr auto;align-items:end}
+  .driver-contact-actions{justify-content:flex-end}
+  .assignment-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .assignment-actions{grid-template-columns:auto auto 1fr}
+  .assignment-actions .submit-btn,.assignment-actions .secondary-btn{width:auto}
+}

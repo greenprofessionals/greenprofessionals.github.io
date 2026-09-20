@@ -214,6 +214,50 @@
       </div>
       <div id="contactActions" class="contact-actions"></div>
       <div id="modalBody" class="detail-grid"></div>
+
+      <section class="driver-assignment-panel" aria-labelledby="driverAssignmentHeading">
+        <div class="assignment-heading">
+          <div>
+            <span class="eyebrow">Pickup Operations</span>
+            <h3 id="driverAssignmentHeading">Driver Assignment</h3>
+          </div>
+          <div id="driverContactActions" class="driver-contact-actions"></div>
+        </div>
+        <form id="driverAssignmentForm" class="driver-assignment-form">
+          <div class="assignment-grid">
+            <div class="field">
+              <label for="driverName">Driver Name</label>
+              <input id="driverName" autocomplete="name" placeholder="e.g., Mohamed Bangura" />
+            </div>
+            <div class="field">
+              <label for="driverPhone">Driver Phone</label>
+              <input id="driverPhone" type="tel" autocomplete="tel" inputmode="tel" placeholder="e.g., 347-555-1234" />
+            </div>
+            <div class="field">
+              <label for="driverVehicle">Vehicle</label>
+              <input id="driverVehicle" placeholder="e.g., Black Toyota Highlander" />
+            </div>
+            <div class="field">
+              <label for="driverPickupStatus">Pickup Status</label>
+              <select id="driverPickupStatus">
+                <option>Not Assigned</option>
+                <option>Driver Assigned</option>
+                <option>Flight Monitoring</option>
+                <option>Landed</option>
+                <option>Passenger Contacted</option>
+                <option>Picked Up</option>
+                <option>Dropped Off</option>
+                <option>Cancelled</option>
+              </select>
+            </div>
+          </div>
+          <div class="assignment-actions">
+            <button class="submit-btn" id="saveDriverAssignment" type="submit">Save Assignment</button>
+            <button class="secondary-btn" id="clearDriverAssignment" type="button">Clear Driver</button>
+            <span id="driverAssignmentStatus" class="status" aria-live="polite"></span>
+          </div>
+        </form>
+      </section>
     </article>
   </div>
 

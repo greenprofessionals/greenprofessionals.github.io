@@ -18,6 +18,7 @@
   let records = [];
   let coordinatorSession = null;
   let accessRecords = [];
+  let currentTravelerIndex = -1;
   const isConfigured = /^https:\/\/script\.google\.com\//.test(cfg.scriptUrl || '');
 
   const CHAPTERS = ["No Chapter", "Arizona Chapter", "Chicago Chapter", "Dallas Chapter", "Delaware Valley Chapter", "Florida Chapter", "Georgia Chapter", "Houston Chapter", "Iowa Chapter", "Minnesota Chapter", "New England Chapter", "New Jersey Chapter", "New York Chapter", "North Carolina Chapter", "North Dakota Chapter", "Northern California Chapter", "Ohio Chapter", "Seattle-Washington Chapter", "Southern California Chapter", "Virginia Chapter", "Washington DC Chapter"];
@@ -234,22 +235,76 @@
     $('kpiPickedUp').textContent = shown.filter(r => ['Picked Up','Dropped Off'].includes(r.pickupStatus)).length;
     travelerList.innerHTML = shown.map(r => {
       const realIndex = records.indexOf(r); const phoneHref = telHref(r.phone);
-      return `<article class="traveler-card" data-index="${realIndex}"><button class="traveler-open" type="button" data-index="${realIndex}" aria-label="Open ${escapeHtml(r.name || 'traveler')} details"><span class="traveler-avatar">${initials(r.name)}</span><span class="traveler-card-main"><strong>${escapeHtml(r.name || 'Traveler')}</strong><span class="traveler-phone">${escapeHtml(r.phone || 'Phone not provided')}</span><span class="traveler-route">${escapeHtml(shortAirport(r.arrivalAirport) || 'Airport TBD')} · ${escapeHtml(r.arrivalTerminal ? 'Terminal ' + r.arrivalTerminal : 'Terminal TBD')} · ${escapeHtml(r.airline || 'Airline TBD')}</span></span><span class="chevron">›</span></button><div class="traveler-quick-actions">${phoneHref ? `<a class="contact-btn call" href="${phoneHref}">Call</a><a class="contact-btn sms" href="${smsHref(r.phone)}">Text</a><a class="contact-btn whatsapp" href="${waHref(r.phone)}" target="_blank" rel="noopener">WhatsApp</a>` : ''}<span class="status-pill ${statusClass(r.pickupStatus)}">${escapeHtml(r.pickupStatus || 'Not Assigned')}</span></div></article>`;
+      const assignmentLabel = r.pickupAssignedTo ? 'Update Driver' : 'Assign Driver';
+      return `<article class="traveler-card" data-index="${realIndex}"><button class="traveler-open" type="button" data-index="${realIndex}" aria-label="Open ${escapeHtml(r.name || 'traveler')} details"><span class="traveler-avatar">${initials(r.name)}</span><span class="traveler-card-main"><strong>${escapeHtml(r.name || 'Traveler')}</strong><span class="traveler-phone">${escapeHtml(r.phone || 'Phone not provided')}</span><span class="traveler-route">${escapeHtml(shortAirport(r.arrivalAirport) || 'Airport TBD')} · ${escapeHtml(r.arrivalTerminal ? 'Terminal ' + r.arrivalTerminal : 'Terminal TBD')} · ${escapeHtml(r.airline || 'Airline TBD')}</span></span><span class="chevron">›</span></button><div class="traveler-quick-actions">${phoneHref ? `<a class="contact-btn call" href="${phoneHref}">Call</a><a class="contact-btn sms" href="${smsHref(r.phone)}">Text</a><a class="contact-btn whatsapp" href="${waHref(r.phone)}" target="_blank" rel="noopener">WhatsApp</a>` : ''}<button class="contact-btn assign-driver-btn" type="button" data-index="${realIndex}">${assignmentLabel}</button><span class="status-pill ${statusClass(r.pickupStatus)}">${escapeHtml(r.pickupStatus || 'Not Assigned')}</span></div></article>`;
     }).join('');
     emptyState.classList.toggle('hidden', shown.length > 0);
     travelerList.querySelectorAll('.traveler-open').forEach(btn => btn.addEventListener('click', () => openTraveler(Number(btn.dataset.index))));
+    travelerList.querySelectorAll('.assign-driver-btn').forEach(btn => btn.addEventListener('click', () => openTraveler(Number(btn.dataset.index), true)));
     updateMessageAudience();
   }
 
-  function openTraveler(index) {
+  function openTraveler(index, focusAssignment = false) {
     const r = records[index]; if (!r) return;
+    currentTravelerIndex = index;
     $('modalTitle').textContent = r.name || 'Traveler'; $('modalChapter').textContent = r.chapter || 'Chapter / Region not provided';
     $('modalStatus').textContent = r.pickupStatus || 'Not Assigned'; $('modalStatus').className = 'status-pill ' + statusClass(r.pickupStatus);
     const phone = r.phone || '';
     $('contactActions').innerHTML = phone ? `<a class="contact-btn call" href="${telHref(phone)}">Call ${escapeHtml(phone)}</a><a class="contact-btn sms" href="${smsHref(phone)}">Text</a><a class="contact-btn whatsapp" href="${waHref(phone)}" target="_blank" rel="noopener">WhatsApp</a>` : '<span class="status error">Phone number not available.</span>';
     const details = [['Airport',r.arrivalAirport],['Terminal',r.arrivalTerminal||'Not provided'],['Airline',r.airline],['Flight Number',r.flightNumber],['Arrival Date',r.arrivalDate],['Scheduled Arrival',r.scheduledArrivalTime],['Origin',r.departureCityAirport],['Party Size',r.partySize],['Checked Bags',bagText(r)],['Drop-Off',r.dropoff],['Return Transportation',r.returnTransportationNeeded],['Departure Date',r.departureDate],['Departure Airport',r.departureAirport],['Departure Airline',r.departureAirline],['Departure Flight',r.departureFlightNumber],['Departure Time',r.scheduledDepartureTime],['Assigned Driver',r.pickupAssignedTo],['Driver Phone',r.driverPhone],['Vehicle',r.vehicle],['Actual Arrival',r.actualArrivalTime],['Passenger Contacted',r.passengerContacted],['Picked Up',r.pickedUp],['Dropped Off',r.droppedOff]].filter(([,v])=>v!==''&&v!==null&&v!==undefined);
     $('modalBody').innerHTML = details.map(([label,value])=>`<div class="detail-item"><span>${escapeHtml(label)}</span><strong>${escapeHtml(String(value))}</strong></div>`).join('');
+    populateDriverAssignment(r);
     $('travelerModal').classList.remove('hidden'); document.body.classList.add('modal-open');
+    if (focusAssignment) setTimeout(() => $('driverName')?.focus(), 80);
+  }
+
+  function populateDriverAssignment(r) {
+    $('driverName').value = r.pickupAssignedTo || '';
+    $('driverPhone').value = r.driverPhone || '';
+    $('driverVehicle').value = r.vehicle || '';
+    $('driverPickupStatus').value = r.pickupStatus || 'Not Assigned';
+    $('driverAssignmentStatus').textContent = '';
+    renderDriverContactActions(r);
+  }
+
+  function renderDriverContactActions(r) {
+    const wrap = $('driverContactActions');
+    if (!wrap) return;
+    const d = digits(r.driverPhone);
+    if (!d) { wrap.innerHTML = r.pickupAssignedTo ? '<span class="status">Driver phone not provided.</span>' : ''; return; }
+    wrap.innerHTML = `<a class="contact-btn call" href="tel:+${d}">Call Driver</a><a class="contact-btn sms" href="sms:+${d}">Text Driver</a><a class="contact-btn whatsapp" href="https://wa.me/${d}" target="_blank" rel="noopener">WhatsApp Driver</a>`;
+  }
+
+  async function saveDriverAssignment(e) {
+    e.preventDefault();
+    const r = records[currentTravelerIndex];
+    if (!r || !r.submissionId) { alert('Traveler record ID is unavailable. Refresh and try again.'); return; }
+    const token = sessionStorage.getItem(SESSION_KEY) || '';
+    const driverName = $('driverName').value.trim();
+    const driverPhone = $('driverPhone').value.trim();
+    const vehicle = $('driverVehicle').value.trim();
+    let pickupStatus = $('driverPickupStatus').value || 'Not Assigned';
+    if (driverName && pickupStatus === 'Not Assigned') pickupStatus = 'Driver Assigned';
+    $('driverPickupStatus').value = pickupStatus;
+    const status = $('driverAssignmentStatus');
+    status.textContent = 'Saving…'; status.className = 'status';
+    $('saveDriverAssignment').disabled = true;
+    try {
+      const data = await jsonp({ action:'driverAssignmentSave', session_token:token, submission_id:r.submissionId, driver_name:driverName, driver_phone:driverPhone, vehicle:vehicle, pickup_status:pickupStatus });
+      if (!data?.ok) throw new Error(data?.error || 'Could not save driver assignment.');
+      records[currentTravelerIndex] = { ...r, ...(data.record || {}), pickupAssignedTo:driverName, driverPhone:driverPhone, vehicle:vehicle, pickupStatus:pickupStatus };
+      status.textContent = data.message || 'Driver assignment saved.'; status.className = 'status success';
+      render();
+      openTraveler(currentTravelerIndex);
+      $('driverAssignmentStatus').textContent = data.message || 'Driver assignment saved.'; $('driverAssignmentStatus').className = 'status success';
+    } catch (err) {
+      status.textContent = err.message || 'Could not save driver assignment.'; status.className = 'status error';
+    } finally { $('saveDriverAssignment').disabled = false; }
+  }
+
+  async function clearDriverAssignment() {
+    $('driverName').value = ''; $('driverPhone').value = ''; $('driverVehicle').value = ''; $('driverPickupStatus').value = 'Not Assigned';
+    await saveDriverAssignment({ preventDefault(){} });
   }
 
   function personalize(template, r) {
@@ -301,6 +356,8 @@
   messageTemplate.addEventListener('change', updateTemplate); $('buildMessageQueue').addEventListener('click', buildMessageQueue); document.querySelectorAll('[data-placeholder]').forEach(btn => btn.addEventListener('click', () => insertPlaceholder(btn.dataset.placeholder))); updateTemplate();
   if ($('coordinatorAdminForm')) $('coordinatorAdminForm').addEventListener('submit', saveCoordinatorAccess);
   if ($('cancelCoordinatorEdit')) $('cancelCoordinatorEdit').addEventListener('click', resetCoordinatorForm);
+  if ($('driverAssignmentForm')) $('driverAssignmentForm').addEventListener('submit', saveDriverAssignment);
+  if ($('clearDriverAssignment')) $('clearDriverAssignment').addEventListener('click', clearDriverAssignment);
 
   if (!isConfigured) {
     showLogin('Administrator setup required: add the deployed Apps Script URL to config.js.');

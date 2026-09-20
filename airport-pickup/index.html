@@ -86,6 +86,7 @@
                 <label for="chapter">Chapter <span class="req">*</span></label>
                 <select id="chapter" name="chapter_region" required>
                   <option value="">Select chapter</option>
+                  <option>No Chapter</option>
                   <option>Arizona Chapter</option>
                   <option>Chicago Chapter</option>
                   <option>Dallas Chapter</option>
@@ -113,8 +114,9 @@
                 <input id="mobile" name="mobile_whatsapp" type="tel" autocomplete="tel" placeholder="Include country code if outside the U.S." required />
               </div>
               <div class="field">
-                <label for="email">Email Address <span class="req">*</span></label>
-                <input id="email" name="email" type="email" autocomplete="email" required />
+                <label for="email">Email Address <span class="optional">(Optional)</span></label>
+                <input id="email" name="email" type="email" autocomplete="email" placeholder="name@example.com" />
+                <div class="help">If you provide an email address, an automatic confirmation can be sent after your travel information is submitted.</div>
               </div>
               <div class="field">
                 <label for="additionalTravelerCount">Additional Travelers With You <span class="req">*</span></label>
@@ -270,7 +272,7 @@
             <legend>6. Communication Preferences</legend>
             <p class="section-help">Choose how the transportation team may contact you about airport pickup and travel logistics. SMS and WhatsApp are sent manually, one traveler at a time by an authorized coordinator.</p>
             <div class="message-options">
-              <label class="consent"><input type="checkbox" name="email_consent" value="Yes" checked /><span><strong>Email</strong> — confirmations and detailed transportation updates.</span></label>
+              <label class="consent"><input type="checkbox" name="email_consent" value="Yes" checked /><span><strong>Email</strong> — if an email address is provided, send an automatic submission confirmation and transportation updates.</span></label>
               <label class="consent"><input type="checkbox" name="sms_consent" value="Yes" /><span><strong>SMS/Text</strong> — time-sensitive pickup and driver updates. Message and data rates may apply.</span></label>
               <label class="consent"><input type="checkbox" name="whatsapp_consent" value="Yes" /><span><strong>WhatsApp</strong> — pickup and driver coordination through WhatsApp.</span></label>
             </div>
