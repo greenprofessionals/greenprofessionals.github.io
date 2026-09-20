@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#0c5a37" />
   <meta name="robots" content="noindex,nofollow,noarchive" />
-  <meta name="description" content="Private transportation coordinator view for SLPP North America Women's Council airport pickup logistics." />
+  <meta name="description" content="Transportation coordinator view for SLPP North America Women's Council airport pickup logistics." />
   <title>Coordinator View | Airport Pickup</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
@@ -22,28 +22,12 @@
 
   <main class="coordinator-main">
     <section class="coord-hero">
-      <span class="eyebrow">Authorized coordinators only</span>
+      <span class="eyebrow">Transportation Coordination</span>
       <h1>Traveler Coordination</h1>
       <p>Choose a chapter to see its travelers. The mobile view puts the traveler's name, phone number, airport, terminal, and airline at your fingertips for direct pickup coordination.</p>
     </section>
 
-    <section id="loginCard" class="coord-login card-panel">
-      <div class="lock-icon" aria-hidden="true">🔒</div>
-      <div>
-        <h2>Coordinator Login</h2>
-        <p>Enter the coordinator access code. It is verified by the Google Apps Script backend and exchanged for a temporary session token.</p>
-      </div>
-      <form id="loginForm" class="coord-login-form">
-        <label for="accessCode">Access Code</label>
-        <div class="access-row">
-          <input id="accessCode" type="password" autocomplete="current-password" required />
-          <button type="submit" class="submit-btn">Open Board</button>
-        </div>
-        <span id="loginStatus" class="status" aria-live="polite"></span>
-      </form>
-    </section>
-
-    <section id="dashboard" class="hidden">
+    <section id="dashboard">
       <div class="coord-toolbar card-panel">
         <div class="field">
           <label for="chapterFilter">Chapter / Region</label>
@@ -55,7 +39,6 @@
         </div>
         <div class="coord-toolbar-actions">
           <button id="refreshBtn" class="secondary-btn" type="button">Refresh</button>
-          <button id="lockBtn" class="secondary-btn" type="button">Lock</button>
         </div>
       </div>
 
@@ -91,7 +74,7 @@
     </article>
   </div>
 
-  <footer class="footer">Private operational view for authorized transportation coordinators. Do not screenshot or redistribute traveler information outside the transportation team.</footer>
+  <footer class="footer">Operational transportation view. Use traveler information only for airport pickup and related event transportation coordination.</footer>
   <script src="config.js"></script>
   <script src="coordinator.js"></script>
 </body>
