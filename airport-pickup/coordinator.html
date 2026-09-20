@@ -57,6 +57,37 @@
         <div id="emptyState" class="empty-state hidden">No travelers match this selection.</div>
       </section>
 
+
+      <section class="card-panel messaging-panel" id="massMessaging">
+        <div class="panel-heading">
+          <div><h2>Personalized Mass Messaging</h2><p>Create a personalized message queue for the travelers currently selected by chapter/search. Messages remain one-to-one: you review and open each traveler's SMS or WhatsApp conversation individually.</p></div>
+        </div>
+        <div class="message-builder">
+          <div class="field">
+            <label for="messageTemplate">Message Template</label>
+            <select id="messageTemplate">
+              <option value="arrivalReminder">Arrival Information Reminder</option>
+              <option value="driverAssigned">Driver Assigned</option>
+              <option value="landedCheckin">Landed / Check-In</option>
+              <option value="pickupComplete">Pickup Complete</option>
+              <option value="itineraryUpdate">Request Itinerary Update</option>
+              <option value="eventReminder">Event / Hotel Reminder</option>
+              <option value="custom">Custom Message</option>
+            </select>
+          </div>
+          <div class="field full">
+            <label for="messageText">Message</label>
+            <textarea id="messageText" rows="6"></textarea>
+            <div class="help">Available placeholders: {first_name}, {name}, {chapter}, {airport}, {terminal}, {airline}, {flight}, {arrival_date}, {arrival_time}, {driver}, {driver_phone}, {vehicle}, {status}, {dropoff}.</div>
+          </div>
+          <div class="message-actions">
+            <button id="buildMessageQueue" class="submit-btn" type="button">Build Personalized Queue</button>
+            <span id="messageAudience" class="status"></span>
+          </div>
+        </div>
+        <div id="messageQueue" class="message-queue"></div>
+      </section>
+
       <div class="privacy-strip"><strong>Coordinator visibility:</strong> name, phone, travel itinerary and pickup-operational details only. Email, emergency contacts, accessibility information and private coordinator notes are not returned to this page.</div>
     </section>
   </main>
