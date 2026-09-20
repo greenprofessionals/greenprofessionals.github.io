@@ -59,7 +59,9 @@
       }
       throw new Error(data?.error || 'Could not load traveler information.');
     }
-    records = Array.isArray(data.records) ? data.records : [];
+    records = Array.isArray(data.records)
+      ? data.records.filter(r => String(r.submissionId || '').trim() !== '' && String(r.name || '').trim() !== '')
+      : [];
     coordinatorSession = data.coordinator || coordinatorSession;
     loginPanel.classList.add('hidden');
     dashboard.classList.remove('hidden');
