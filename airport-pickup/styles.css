@@ -403,58 +403,65 @@ main { max-width: 1120px; margin: 0 auto; padding: 34px 20px 70px; }
 /* v7 personalized messaging */
 .messaging-panel{margin-top:18px}.message-builder{display:grid;gap:14px}.message-builder .full{grid-column:1/-1}.message-actions{display:flex;flex-wrap:wrap;align-items:center;gap:12px}.message-queue{display:grid;gap:12px;margin-top:18px}.message-queue-card{display:grid;gap:12px;padding:16px;border:1px solid rgba(12,90,55,.16);border-radius:16px;background:#fff}.message-queue-card strong{display:block;font-size:1rem}.message-queue-card span{display:block;color:#607067;font-size:.85rem;margin-top:2px}.message-queue-card p{margin:10px 0 0;white-space:pre-wrap;line-height:1.45}.message-queue-actions{display:flex;gap:8px;flex-wrap:wrap}@media(min-width:760px){.message-builder{grid-template-columns:minmax(220px,.45fr) 1fr}.message-queue-card{grid-template-columns:1fr auto;align-items:center}.message-queue-actions{justify-content:flex-end}}
 
-
-/* Mobile spacing fix for Personalized Mass Messaging */
-.mass-messaging-card,
-.messaging-panel,
-.message-builder,
-.message-queue,
-.queue-card,
-.traveler-message-card {
-  box-sizing: border-box;
-  width: 100%;
+/* v13 - Coordinator Access Management mobile card spacing */
+.admin-panel .admin-form {
+  padding: 18px 20px 6px;
 }
 
-@media (max-width: 768px) {
-  .mass-messaging-card,
-  .messaging-panel,
-  .message-builder {
-    padding-left: 16px;
-    padding-right: 16px;
+.admin-panel .admin-form .grid {
+  gap: 14px;
+}
+
+.admin-panel .message-actions {
+  padding-top: 4px;
+  padding-bottom: 8px;
+}
+
+.admin-panel .access-list {
+  margin-top: 10px;
+  padding: 0 20px 20px;
+}
+
+.admin-panel .access-card {
+  margin: 0;
+}
+
+@media (max-width: 640px) {
+  .admin-panel .panel-heading {
+    padding: 18px 16px 14px;
   }
 
-  .message-builder textarea,
-  .message-builder select,
-  .message-builder input {
+  .admin-panel .admin-form {
+    padding: 16px 14px 6px;
+  }
+
+  .admin-panel .admin-form .field {
+    min-width: 0;
+  }
+
+  .admin-panel .admin-form input,
+  .admin-panel .admin-form select {
     width: 100%;
+    max-width: 100%;
     box-sizing: border-box;
   }
 
-  .message-queue {
-    padding-left: 0;
-    padding-right: 0;
+  .admin-panel .message-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
   }
 
-  .queue-card,
-  .traveler-message-card {
-    margin-left: 0;
-    margin-right: 0;
-    padding: 16px;
-    border-radius: 16px;
+  .admin-panel .message-actions .submit-btn,
+  .admin-panel .message-actions .secondary-btn {
+    width: 100%;
   }
 
-  .queue-card p,
-  .traveler-message-card p {
-    margin-left: 0;
-    margin-right: 0;
-    line-height: 1.55;
-    overflow-wrap: anywhere;
+  .admin-panel .access-list {
+    padding: 0 14px 16px;
   }
 
-  .template-help,
-  .placeholder-help {
-    padding-left: 2px;
-    padding-right: 2px;
-    line-height: 1.45;
+  .admin-panel .access-card {
+    padding: 14px;
   }
 }
