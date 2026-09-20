@@ -2,6 +2,11 @@
   const cfg = window.AIRPORT_PICKUP_CONFIG || {};
   const $ = id => document.getElementById(id);
   const dashboard = $('dashboard');
+  const loginPanel = $('loginPanel');
+  const accessForm = $('accessForm');
+  const accessCode = $('accessCode');
+  const accessStatus = $('accessStatus');
+  const SESSION_KEY = 'airportPickupCoordinatorToken';
   const chapterFilter = $('chapterFilter');
   const travelerSearch = $('travelerSearch');
   const travelerList = $('travelerList');
@@ -13,7 +18,7 @@
   let records = [];
   const isConfigured = /^https:\/\/script\.google\.com\//.test(cfg.scriptUrl || '');
 
-  const CHAPTERS = ["Arizona Chapter", "Chicago Chapter", "Dallas Chapter", "Delaware Valley Chapter", "Florida Chapter", "Georgia Chapter", "Houston Chapter", "Iowa Chapter", "Minnesota Chapter", "New England Chapter", "New Jersey Chapter", "New York Chapter", "North Carolina Chapter", "North Dakota Chapter", "Northern California Chapter", "Ohio Chapter", "Seattle-Washington Chapter", "Southern California Chapter", "Virginia Chapter", "Washington DC Chapter"];
+  const CHAPTERS = ["No Chapter", "Arizona Chapter", "Chicago Chapter", "Dallas Chapter", "Delaware Valley Chapter", "Florida Chapter", "Georgia Chapter", "Houston Chapter", "Iowa Chapter", "Minnesota Chapter", "New England Chapter", "New Jersey Chapter", "New York Chapter", "North Carolina Chapter", "North Dakota Chapter", "Northern California Chapter", "Ohio Chapter", "Seattle-Washington Chapter", "Southern California Chapter", "Virginia Chapter", "Washington DC Chapter"];
 
   const templates = {
     arrivalReminder: 'Hello {first_name}, this is the SLPP North America Women\'s Council transportation team. Please confirm that your current arrival is {airline} {flight} at {airport}{terminal_clause} on {arrival_date} at {arrival_time}. Reply directly if anything has changed.',
@@ -41,18 +46,53 @@
   }
 
   async function loadData() {
-    const data = await jsonp({ action: 'coordinatorData' });
-    if (!data?.ok) throw new Error(data?.error || 'Could not load traveler information.');
+    const token = sessionStorage.getItem(SESSION_KEY) || '';
+    if (!token) throw new Error('Coordinator login required.');
+    const data = await jsonp({ action: 'coordinatorData', session_token: token });
+    if (!data?.ok) {
+      if (/session|login|expired/i.test(data?.error || '')) {
+        sessionStorage.removeItem(SESSION_KEY);
+        showLogin(data?.error || 'Coordinator session expired. Please log in again.');
+      }
+      throw new Error(data?.error || 'Could not load traveler information.');
+    }
     records = Array.isArray(data.records) ? data.records : [];
+    loginPanel.classList.add('hidden');
     dashboard.classList.remove('hidden');
     populateChapters(); render(); updateMessageAudience();
+  }
+
+
+  function showLogin(message = '') {
+    dashboard.classList.add('hidden');
+    loginPanel.classList.remove('hidden');
+    accessStatus.textContent = message;
+    accessStatus.className = message ? 'status error' : 'status';
+    setTimeout(() => accessCode.focus(), 0);
+  }
+
+  async function loginCoordinator(password) {
+    const data = await jsonp({ action: 'coordinatorLogin', access_code: password });
+    if (!data?.ok || !data.sessionToken) throw new Error(data?.error || 'Invalid coordinator password.');
+    sessionStorage.setItem(SESSION_KEY, data.sessionToken);
+    accessCode.value = '';
+    accessStatus.textContent = '';
+    await loadData();
+  }
+
+  function logoutCoordinator() {
+    sessionStorage.removeItem(SESSION_KEY);
+    records = [];
+    travelerList.innerHTML = '';
+    messageQueue.innerHTML = '';
+    showLogin('You have been logged out.');
   }
 
   function populateChapters() {
     const current = chapterFilter.value;
     const legacy = [...new Set(records.map(r => r.chapter).filter(Boolean).filter(c => !CHAPTERS.includes(c)))].sort((a,b) => a.localeCompare(b));
     const chapters = [...CHAPTERS, ...legacy];
-    chapterFilter.innerHTML = '<option value="">All Chapters</option>' + chapters.map(c => `<option>${escapeHtml(c)}</option>`).join('');
+    chapterFilter.innerHTML = '<option value="">All Chapters / Regions</option>' + chapters.map(c => `<option>${escapeHtml(c)}</option>`).join('');
     if (chapters.includes(current)) chapterFilter.value = current;
   }
 
@@ -112,13 +152,26 @@
   function updateMessageAudience(){ if(messageAudience) messageAudience.textContent = `${filteredRecords().length} traveler${filteredRecords().length===1?'':'s'} in current audience`; }
   function closeModal(){ $('travelerModal').classList.add('hidden'); document.body.classList.remove('modal-open'); }
 
+  accessForm.addEventListener('submit', async e => {
+    e.preventDefault();
+    accessStatus.textContent = 'Checking…';
+    accessStatus.className = 'status';
+    try { await loginCoordinator(accessCode.value); }
+    catch (err) { accessStatus.textContent = err.message || 'Could not sign in.'; accessStatus.className = 'status error'; }
+  });
   chapterFilter.addEventListener('change', render); travelerSearch.addEventListener('input', render);
-  $('refreshBtn').addEventListener('click', async()=>{ $('refreshBtn').disabled=true; try{await loadData();}catch(err){alert(err.message||'Could not refresh traveler information.');}finally{$('refreshBtn').disabled=false;} });
+  $('refreshBtn').addEventListener('click', async()=>{ $('refreshBtn').disabled=true; try{await loadData();}catch(err){if(!/session|login|expired/i.test(err.message||''))alert(err.message||'Could not refresh traveler information.');}finally{$('refreshBtn').disabled=false;} });
+  $('logoutBtn').addEventListener('click', logoutCoordinator);
   $('modalClose').addEventListener('click',closeModal); $('travelerModal').addEventListener('click',e=>{if(e.target.dataset.closeModal==='true')closeModal();}); document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
   messageTemplate.addEventListener('change', updateTemplate); $('buildMessageQueue').addEventListener('click', buildMessageQueue); updateTemplate();
 
-  if(isConfigured){ loadData().catch(err=>{emptyState.textContent=err.message||'Could not load traveler information.';emptyState.classList.remove('hidden');}); }
-  else { emptyState.textContent='Administrator setup required: add the deployed Apps Script URL to config.js.'; emptyState.classList.remove('hidden'); }
+  if (!isConfigured) {
+    showLogin('Administrator setup required: add the deployed Apps Script URL to config.js.');
+  } else if (sessionStorage.getItem(SESSION_KEY)) {
+    loadData().catch(err => { if (!/session|login|expired/i.test(err.message || '')) showLogin(err.message || 'Could not load traveler information.'); });
+  } else {
+    showLogin();
+  }
 
   function digits(v){return String(v||'').replace(/\D/g,'');} function telHref(v){const d=digits(v);return d?'tel:+'+d:'';} function smsHref(v){const d=digits(v);return d?'sms:+'+d:'#';} function waHref(v){const d=digits(v);return d?'https://wa.me/'+d:'#';} function shortAirport(v){const s=String(v||'');const m=s.match(/^(BWI|DCA|IAD)/);return m?m[1]:s;} function bagText(r){return r.checkedBags==='Yes'?`${r.checkedBagCount||''} checked bag${String(r.checkedBagCount)==='1'?'':'s'}`.trim():(r.checkedBags||'No');} function initials(name){return String(name||'?').trim().split(/\s+/).slice(0,2).map(x=>x[0]||'').join('').toUpperCase();} function statusClass(s){return 'status-'+String(s||'not-assigned').toLowerCase().replace(/[^a-z0-9]+/g,'-');} function escapeHtml(v){return String(v??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
 })();

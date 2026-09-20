@@ -27,11 +27,50 @@
       <p>Choose a chapter to see its travelers. The mobile view puts the traveler's name, phone number, airport, terminal, and airline at your fingertips for direct pickup coordination.</p>
     </section>
 
-    <section id="dashboard">
+    <section id="loginPanel" class="coord-login card-panel">
+      <div class="lock-icon" aria-hidden="true">🔒</div>
+      <div>
+        <h2>Coordinator Access</h2>
+        <p>Enter the coordinator password to open traveler coordination for this session.</p>
+      </div>
+      <form id="accessForm" class="coord-login-form">
+        <label for="accessCode">Coordinator Password</label>
+        <div class="access-row">
+          <input id="accessCode" type="password" autocomplete="current-password" required />
+          <button class="submit-btn" type="submit">Open Coordinator View</button>
+        </div>
+        <div id="accessStatus" class="status" aria-live="polite"></div>
+      </form>
+    </section>
+
+    <section id="dashboard" class="hidden">
       <div class="coord-toolbar card-panel">
         <div class="field">
           <label for="chapterFilter">Chapter / Region</label>
-          <select id="chapterFilter"><option value="">All Chapters / Regions</option></select>
+          <select id="chapterFilter">
+            <option value="">All Chapters / Regions</option>
+            <option>No Chapter</option>
+            <option>Arizona Chapter</option>
+            <option>Chicago Chapter</option>
+            <option>Dallas Chapter</option>
+            <option>Delaware Valley Chapter</option>
+            <option>Florida Chapter</option>
+            <option>Georgia Chapter</option>
+            <option>Houston Chapter</option>
+            <option>Iowa Chapter</option>
+            <option>Minnesota Chapter</option>
+            <option>New England Chapter</option>
+            <option>New Jersey Chapter</option>
+            <option>New York Chapter</option>
+            <option>North Carolina Chapter</option>
+            <option>North Dakota Chapter</option>
+            <option>Northern California Chapter</option>
+            <option>Ohio Chapter</option>
+            <option>Seattle-Washington Chapter</option>
+            <option>Southern California Chapter</option>
+            <option>Virginia Chapter</option>
+            <option>Washington DC Chapter</option>
+          </select>
         </div>
         <div class="field">
           <label for="travelerSearch">Find Traveler</label>
@@ -39,6 +78,7 @@
         </div>
         <div class="coord-toolbar-actions">
           <button id="refreshBtn" class="secondary-btn" type="button">Refresh</button>
+          <button id="logoutBtn" class="secondary-btn" type="button">Log Out</button>
         </div>
       </div>
 
