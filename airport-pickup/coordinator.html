@@ -8,6 +8,10 @@
   <meta name="description" content="Transportation coordinator view for SLPP North America Women's Council airport pickup logistics." />
   <title>Coordinator View | Airport Pickup</title>
   <link rel="stylesheet" href="styles.css" />
+
+  <style>
+    .admin-panel{margin-top:18px}.admin-form .grid{display:grid;grid-template-columns:1fr;gap:12px}.access-list{display:grid;gap:10px;margin-top:18px}.access-card{border:1px solid #d8e3dc;border-radius:14px;padding:14px;background:#fff;display:grid;gap:8px}.access-card-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}.access-card-meta{display:flex;flex-wrap:wrap;gap:6px;font-size:.9rem;color:#53635b}.access-card-actions{display:flex;flex-wrap:wrap;gap:8px}.access-card-actions button{min-height:40px}.role-badge{font-size:.78rem;font-weight:700;padding:4px 8px;border-radius:999px;background:#e8f4ed;color:#0c5a37}.inactive-badge{background:#f4e8e8;color:#8a2d2d}.coord-toolbar-actions{align-items:center}.coord-toolbar-actions #coordinatorIdentity{margin-right:auto;font-weight:600}@media(min-width:760px){.admin-form .grid{grid-template-columns:repeat(2,minmax(0,1fr))}.access-card{grid-template-columns:1fr auto;align-items:center}.access-card-actions{justify-content:flex-end}}
+  </style>
 </head>
 <body class="coordinator-page">
   <header class="site-header">
@@ -78,7 +82,7 @@
         </div>
         <div class="coord-toolbar-actions">
           <button id="refreshBtn" class="secondary-btn" type="button">Refresh</button>
-          <button id="logoutBtn" class="secondary-btn" type="button">Log Out</button>
+          <span id="coordinatorIdentity" class="status"></span><button id="logoutBtn" class="secondary-btn" type="button">Log Out</button>
         </div>
       </div>
 
@@ -118,7 +122,24 @@
           <div class="field full">
             <label for="messageText">Message</label>
             <textarea id="messageText" rows="6"></textarea>
-            <div class="help">Available placeholders: {first_name}, {name}, {chapter}, {airport}, {terminal}, {airline}, {flight}, {arrival_date}, {arrival_time}, {driver}, {driver_phone}, {vehicle}, {status}, {dropoff}.</div>
+            <div class="help"><strong>Insert personalized field:</strong></div>
+            <div class="placeholder-toolbar" id="placeholderToolbar" aria-label="Personalized message placeholders">
+              <button type="button" class="contact-btn placeholder-token" data-placeholder="{first_name}">{first_name}</button>
+              <button type="button" class="contact-btn placeholder-token" data-placeholder="{name}">{name}</button>
+              <button type="button" class="contact-btn placeholder-token" data-placeholder="{chapter}">{chapter}</button>
+              <button type="button" class="contact-btn placeholder-token" data-placeholder="{airport}">{airport}</button>
+              <button type="button" class="contact-btn placeholder-token" data-placeholder="{terminal}">{terminal}</button>
+              <button type="button" class="contact-btn placeholder-token" data-placeholder="{airline}">{airline}</button>
+              <button type="button" class="contact-btn placeholder-token" data-placeholder="{flight}">{flight}</button>
+              <button type="button" class="contact-btn placeholder-token" data-placeholder="{arrival_date}">{arrival_date}</button>
+              <button type="button" class="contact-btn placeholder-token" data-placeholder="{arrival_time}">{arrival_time}</button>
+              <button type="button" class="contact-btn placeholder-token" data-placeholder="{driver}">{driver}</button>
+              <button type="button" class="contact-btn placeholder-token" data-placeholder="{driver_phone}">{driver_phone}</button>
+              <button type="button" class="contact-btn placeholder-token" data-placeholder="{vehicle}">{vehicle}</button>
+              <button type="button" class="contact-btn placeholder-token" data-placeholder="{status}">{status}</button>
+              <button type="button" class="contact-btn placeholder-token" data-placeholder="{dropoff}">{dropoff}</button>
+            </div>
+            <div class="help">Tap a field to insert it at the cursor position in the message above.</div>
           </div>
           <div class="message-actions">
             <button id="buildMessageQueue" class="submit-btn" type="button">Build Personalized Queue</button>
@@ -126,6 +147,57 @@
           </div>
         </div>
         <div id="messageQueue" class="message-queue"></div>
+      </section>
+
+
+      <section id="accessManagement" class="card-panel admin-panel hidden">
+        <div class="panel-heading">
+          <div>
+            <h2>Coordinator Access Management</h2>
+            <p>Admins can add, update, activate/deactivate, or remove coordinator accounts. Access codes are stored as hashes in the private Google Sheet.</p>
+          </div>
+        </div>
+        <form id="coordinatorAdminForm" class="admin-form">
+          <input id="coordinatorId" type="hidden" />
+          <div class="grid">
+            <div class="field">
+              <label for="coordinatorName">Coordinator Name</label>
+              <input id="coordinatorName" required placeholder="e.g., Kunhle Vandi" />
+            </div>
+            <div class="field">
+              <label for="coordinatorPassword">Access Code / Password</label>
+              <input id="coordinatorPassword" type="password" autocomplete="new-password" placeholder="Required for new coordinator" />
+              <div class="help">Leave blank when editing to keep the existing access code.</div>
+            </div>
+            <div class="field">
+              <label for="coordinatorChapter">Chapter / Region</label>
+              <select id="coordinatorChapter">
+                <option>No Chapter</option>
+                <option>Arizona Chapter</option><option>Chicago Chapter</option><option>Dallas Chapter</option>
+                <option>Delaware Valley Chapter</option><option>Florida Chapter</option><option>Georgia Chapter</option>
+                <option>Houston Chapter</option><option>Iowa Chapter</option><option>Minnesota Chapter</option>
+                <option>New England Chapter</option><option>New Jersey Chapter</option><option>New York Chapter</option>
+                <option>North Carolina Chapter</option><option>North Dakota Chapter</option><option>Northern California Chapter</option>
+                <option>Ohio Chapter</option><option>Seattle-Washington Chapter</option><option>Southern California Chapter</option>
+                <option>Virginia Chapter</option><option>Washington DC Chapter</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="coordinatorRole">Role</label>
+              <select id="coordinatorRole"><option>Coordinator</option><option>Admin</option></select>
+            </div>
+            <div class="field">
+              <label for="coordinatorActive">Active</label>
+              <select id="coordinatorActive"><option>Yes</option><option>No</option></select>
+            </div>
+          </div>
+          <div class="message-actions">
+            <button class="submit-btn" type="submit">Save Coordinator</button>
+            <button id="cancelCoordinatorEdit" class="secondary-btn" type="button">Clear</button>
+            <span id="adminStatus" class="status" aria-live="polite"></span>
+          </div>
+        </form>
+        <div id="coordinatorAccessList" class="access-list"></div>
       </section>
 
       <div class="privacy-strip"><strong>Coordinator visibility:</strong> name, phone, travel itinerary and pickup-operational details only. Email, emergency contacts, accessibility information and private coordinator notes are not returned to this page.</div>

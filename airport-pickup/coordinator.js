@@ -16,6 +16,8 @@
   const messageQueue = $('messageQueue');
   const messageAudience = $('messageAudience');
   let records = [];
+  let coordinatorSession = null;
+  let accessRecords = [];
   const isConfigured = /^https:\/\/script\.google\.com\//.test(cfg.scriptUrl || '');
 
   const CHAPTERS = ["No Chapter", "Arizona Chapter", "Chicago Chapter", "Dallas Chapter", "Delaware Valley Chapter", "Florida Chapter", "Georgia Chapter", "Houston Chapter", "Iowa Chapter", "Minnesota Chapter", "New England Chapter", "New Jersey Chapter", "New York Chapter", "North Carolina Chapter", "North Dakota Chapter", "Northern California Chapter", "Ohio Chapter", "Seattle-Washington Chapter", "Southern California Chapter", "Virginia Chapter", "Washington DC Chapter"];
@@ -57,9 +59,12 @@
       throw new Error(data?.error || 'Could not load traveler information.');
     }
     records = Array.isArray(data.records) ? data.records : [];
+    coordinatorSession = data.coordinator || coordinatorSession;
     loginPanel.classList.add('hidden');
     dashboard.classList.remove('hidden');
+    updateCoordinatorIdentity();
     populateChapters(); render(); updateMessageAudience();
+    await configureAccessManagement();
   }
 
 
@@ -75,6 +80,7 @@
     const data = await jsonp({ action: 'coordinatorLogin', access_code: password });
     if (!data?.ok || !data.sessionToken) throw new Error(data?.error || 'Invalid coordinator password.');
     sessionStorage.setItem(SESSION_KEY, data.sessionToken);
+    coordinatorSession = data.coordinator || null;
     accessCode.value = '';
     accessStatus.textContent = '';
     await loadData();
@@ -83,9 +89,125 @@
   function logoutCoordinator() {
     sessionStorage.removeItem(SESSION_KEY);
     records = [];
+    coordinatorSession = null;
     travelerList.innerHTML = '';
     messageQueue.innerHTML = '';
     showLogin('You have been logged out.');
+  }
+
+  function updateCoordinatorIdentity() {
+    const el = $('coordinatorIdentity');
+    if (!el) return;
+    if (!coordinatorSession) { el.textContent = ''; return; }
+    el.textContent = `${coordinatorSession.name || 'Coordinator'} · ${coordinatorSession.role || 'Coordinator'}`;
+  }
+
+  async function configureAccessManagement() {
+    const panel = $('accessManagement');
+    if (!panel) return;
+    if (!coordinatorSession || coordinatorSession.role !== 'Admin') {
+      panel.classList.add('hidden');
+      return;
+    }
+    panel.classList.remove('hidden');
+    await loadCoordinatorAccess();
+  }
+
+  async function loadCoordinatorAccess() {
+    const token = sessionStorage.getItem(SESSION_KEY) || '';
+    const data = await jsonp({ action:'coordinatorAccessList', session_token:token });
+    if (!data?.ok) throw new Error(data?.error || 'Could not load coordinator access.');
+    accessRecords = Array.isArray(data.records) ? data.records : [];
+    renderCoordinatorAccess();
+  }
+
+  function renderCoordinatorAccess() {
+    const wrap = $('coordinatorAccessList');
+    if (!wrap) return;
+    if (!accessRecords.length) {
+      wrap.innerHTML = '<div class="empty-state">No coordinator accounts found.</div>';
+      return;
+    }
+    wrap.innerHTML = accessRecords.map(r => `
+      <article class="access-card" data-id="${escapeHtml(r.id)}">
+        <div>
+          <div class="access-card-head">
+            <strong>${escapeHtml(r.name || 'Coordinator')}</strong>
+            <span class="role-badge ${String(r.active).toLowerCase()==='yes'?'':'inactive-badge'}">${escapeHtml(r.role || 'Coordinator')} · ${escapeHtml(r.active || 'No')}</span>
+          </div>
+          <div class="access-card-meta">
+            <span>${escapeHtml(r.chapter || 'No Chapter')}</span>
+            ${r.lastLogin ? `<span>Last login: ${escapeHtml(r.lastLogin)}</span>` : ''}
+          </div>
+        </div>
+        <div class="access-card-actions">
+          <button class="secondary-btn" type="button" data-admin-action="edit" data-id="${escapeHtml(r.id)}">Edit</button>
+          <button class="secondary-btn" type="button" data-admin-action="toggle" data-id="${escapeHtml(r.id)}">${String(r.active).toLowerCase()==='yes'?'Deactivate':'Activate'}</button>
+          <button class="secondary-btn" type="button" data-admin-action="delete" data-id="${escapeHtml(r.id)}">Remove</button>
+        </div>
+      </article>`).join('');
+    wrap.querySelectorAll('[data-admin-action]').forEach(btn => btn.addEventListener('click', handleAccessAction));
+  }
+
+  function resetCoordinatorForm() {
+    $('coordinatorId').value = '';
+    $('coordinatorName').value = '';
+    $('coordinatorPassword').value = '';
+    $('coordinatorChapter').value = 'No Chapter';
+    $('coordinatorRole').value = 'Coordinator';
+    $('coordinatorActive').value = 'Yes';
+    $('adminStatus').textContent = '';
+  }
+
+  function editCoordinatorRecord(id) {
+    const r = accessRecords.find(x => x.id === id);
+    if (!r) return;
+    $('coordinatorId').value = r.id || '';
+    $('coordinatorName').value = r.name || '';
+    $('coordinatorPassword').value = '';
+    $('coordinatorChapter').value = r.chapter || 'No Chapter';
+    $('coordinatorRole').value = r.role || 'Coordinator';
+    $('coordinatorActive').value = r.active || 'Yes';
+    $('adminStatus').textContent = 'Editing coordinator. Leave password blank to keep the existing password.';
+    $('coordinatorName').focus();
+  }
+
+  async function handleAccessAction(e) {
+    const action = e.currentTarget.dataset.adminAction;
+    const id = e.currentTarget.dataset.id;
+    if (action === 'edit') return editCoordinatorRecord(id);
+    const token = sessionStorage.getItem(SESSION_KEY) || '';
+    if (action === 'delete' && !confirm('Remove this coordinator account?')) return;
+    const endpoint = action === 'toggle' ? 'coordinatorAccessToggle' : 'coordinatorAccessDelete';
+    const data = await jsonp({ action:endpoint, session_token:token, coordinator_id:id });
+    if (!data?.ok) return alert(data?.error || 'Could not update coordinator access.');
+    await loadCoordinatorAccess();
+  }
+
+  async function saveCoordinatorAccess(e) {
+    e.preventDefault();
+    const status = $('adminStatus');
+    status.textContent = 'Saving…';
+    const token = sessionStorage.getItem(SESSION_KEY) || '';
+    try {
+      const data = await jsonp({
+        action:'coordinatorAccessSave',
+        session_token:token,
+        coordinator_id:$('coordinatorId').value,
+        name:$('coordinatorName').value,
+        access_code:$('coordinatorPassword').value,
+        chapter:$('coordinatorChapter').value,
+        role:$('coordinatorRole').value,
+        active:$('coordinatorActive').value
+      });
+      if (!data?.ok) throw new Error(data?.error || 'Could not save coordinator.');
+      status.textContent = data.message || 'Coordinator saved.';
+      await loadCoordinatorAccess();
+      resetCoordinatorForm();
+    } catch (err) {
+      status.textContent = err.message || 'Could not save coordinator.';
+      status.className = 'status error';
+    }
   }
 
   function populateChapters() {
@@ -148,6 +270,19 @@
     if (!shown.length) messageQueue.innerHTML='<div class="empty-state">No travelers are in the current audience.</div>';
   }
 
+  function insertPlaceholder(token) {
+    if (!token) return;
+    const start = Number.isInteger(messageText.selectionStart) ? messageText.selectionStart : messageText.value.length;
+    const end = Number.isInteger(messageText.selectionEnd) ? messageText.selectionEnd : start;
+    const before = messageText.value.slice(0, start);
+    const after = messageText.value.slice(end);
+    messageText.value = before + token + after;
+    const caret = start + token.length;
+    messageText.focus();
+    messageText.setSelectionRange(caret, caret);
+    messageText.dispatchEvent(new Event('input', { bubbles: true }));
+  }
+
   function updateTemplate(){ messageText.value = templates[messageTemplate.value] || ''; }
   function updateMessageAudience(){ if(messageAudience) messageAudience.textContent = `${filteredRecords().length} traveler${filteredRecords().length===1?'':'s'} in current audience`; }
   function closeModal(){ $('travelerModal').classList.add('hidden'); document.body.classList.remove('modal-open'); }
@@ -163,7 +298,9 @@
   $('refreshBtn').addEventListener('click', async()=>{ $('refreshBtn').disabled=true; try{await loadData();}catch(err){if(!/session|login|expired/i.test(err.message||''))alert(err.message||'Could not refresh traveler information.');}finally{$('refreshBtn').disabled=false;} });
   $('logoutBtn').addEventListener('click', logoutCoordinator);
   $('modalClose').addEventListener('click',closeModal); $('travelerModal').addEventListener('click',e=>{if(e.target.dataset.closeModal==='true')closeModal();}); document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
-  messageTemplate.addEventListener('change', updateTemplate); $('buildMessageQueue').addEventListener('click', buildMessageQueue); updateTemplate();
+  messageTemplate.addEventListener('change', updateTemplate); $('buildMessageQueue').addEventListener('click', buildMessageQueue); document.querySelectorAll('[data-placeholder]').forEach(btn => btn.addEventListener('click', () => insertPlaceholder(btn.dataset.placeholder))); updateTemplate();
+  if ($('coordinatorAdminForm')) $('coordinatorAdminForm').addEventListener('submit', saveCoordinatorAccess);
+  if ($('cancelCoordinatorEdit')) $('cancelCoordinatorEdit').addEventListener('click', resetCoordinatorForm);
 
   if (!isConfigured) {
     showLogin('Administrator setup required: add the deployed Apps Script URL to config.js.');
