@@ -213,10 +213,10 @@
 
   function populateChapters() {
     const current = chapterFilter.value;
-    const legacy = [...new Set(records.map(r => r.chapter).filter(Boolean).filter(c => !CHAPTERS.includes(c)))].sort((a,b) => a.localeCompare(b));
-    const chapters = [...CHAPTERS, ...legacy];
+    const chapters = [...new Set(records.map(r => (r.chapter || 'No Chapter').trim()).filter(Boolean))]
+      .sort((a,b) => a.localeCompare(b));
     chapterFilter.innerHTML = '<option value="">All Chapters / Regions</option>' + chapters.map(c => `<option>${escapeHtml(c)}</option>`).join('');
-    if (chapters.includes(current)) chapterFilter.value = current;
+    chapterFilter.value = chapters.includes(current) ? current : '';
   }
 
   function filteredRecords() {
@@ -307,6 +307,29 @@
     await saveDriverAssignment({ preventDefault(){} });
   }
 
+  async function deleteTravelerRecord() {
+    const r = records[currentTravelerIndex];
+    if (!r || !r.submissionId) { alert('Traveler record ID is unavailable. Refresh and try again.'); return; }
+    const name = r.name || 'this traveler';
+    if (!confirm(`Delete the traveler record for ${name}? This permanently removes the submission from the Google Sheet.`)) return;
+    const token = sessionStorage.getItem(SESSION_KEY) || '';
+    const btn = $('deleteTravelerRecord');
+    if (btn) btn.disabled = true;
+    try {
+      const data = await jsonp({ action:'travelerDelete', session_token:token, submission_id:r.submissionId });
+      if (!data?.ok) throw new Error(data?.error || 'Could not delete traveler record.');
+      records.splice(currentTravelerIndex, 1);
+      currentTravelerIndex = -1;
+      closeModal();
+      populateChapters();
+      render();
+    } catch (err) {
+      alert(err.message || 'Could not delete traveler record.');
+    } finally {
+      if (btn) btn.disabled = false;
+    }
+  }
+
   function personalize(template, r) {
     const first = String(r.name || 'Traveler').trim().split(/\s+/)[0] || 'Traveler';
     const vals = {
@@ -358,6 +381,7 @@
   if ($('cancelCoordinatorEdit')) $('cancelCoordinatorEdit').addEventListener('click', resetCoordinatorForm);
   if ($('driverAssignmentForm')) $('driverAssignmentForm').addEventListener('submit', saveDriverAssignment);
   if ($('clearDriverAssignment')) $('clearDriverAssignment').addEventListener('click', clearDriverAssignment);
+  if ($('deleteTravelerRecord')) $('deleteTravelerRecord').addEventListener('click', deleteTravelerRecord);
 
   if (!isConfigured) {
     showLogin('Administrator setup required: add the deployed Apps Script URL to config.js.');

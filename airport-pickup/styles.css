@@ -484,3 +484,9 @@ main { max-width: 1120px; margin: 0 auto; padding: 34px 20px 70px; }
   .assignment-actions{grid-template-columns:auto auto 1fr}
   .assignment-actions .submit-btn,.assignment-actions .secondary-btn{width:auto}
 }
+
+/* v16: destructive traveler record action */
+.danger-btn{border:1px solid #b42318;background:#fff;color:#b42318;border-radius:10px;padding:10px 14px;font-weight:700;cursor:pointer}
+.danger-btn:hover{background:#fff1f0}
+.danger-btn:disabled{opacity:.55;cursor:not-allowed}
+@media (max-width:640px){.assignment-actions .danger-btn{width:100%;margin-top:6px}}
