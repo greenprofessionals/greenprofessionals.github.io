@@ -13,6 +13,8 @@
   let records = [];
   const isConfigured = /^https:\/\/script\.google\.com\//.test(cfg.scriptUrl || '');
 
+  const CHAPTERS = ["Arizona Chapter", "Chicago Chapter", "Dallas Chapter", "Delaware Valley Chapter", "Florida Chapter", "Georgia Chapter", "Houston Chapter", "Iowa Chapter", "Minnesota Chapter", "New England Chapter", "New Jersey Chapter", "New York Chapter", "North Carolina Chapter", "North Dakota Chapter", "Northern California Chapter", "Ohio Chapter", "Seattle-Washington Chapter", "Southern California Chapter", "Virginia Chapter", "Washington DC Chapter"];
+
   const templates = {
     arrivalReminder: 'Hello {first_name}, this is the SLPP North America Women\'s Council transportation team. Please confirm that your current arrival is {airline} {flight} at {airport}{terminal_clause} on {arrival_date} at {arrival_time}. Reply directly if anything has changed.',
     driverAssigned: 'Hello {first_name}, your airport pickup has been assigned. Driver: {driver}. Phone: {driver_phone}. Vehicle: {vehicle}. Your current pickup status is {status}. Please contact the driver after collecting your luggage.',
@@ -48,8 +50,9 @@
 
   function populateChapters() {
     const current = chapterFilter.value;
-    const chapters = [...new Set(records.map(r => r.chapter).filter(Boolean))].sort((a,b) => a.localeCompare(b));
-    chapterFilter.innerHTML = '<option value="">All Chapters / Regions</option>' + chapters.map(c => `<option>${escapeHtml(c)}</option>`).join('');
+    const legacy = [...new Set(records.map(r => r.chapter).filter(Boolean).filter(c => !CHAPTERS.includes(c)))].sort((a,b) => a.localeCompare(b));
+    const chapters = [...CHAPTERS, ...legacy];
+    chapterFilter.innerHTML = '<option value="">All Chapters</option>' + chapters.map(c => `<option>${escapeHtml(c)}</option>`).join('');
     if (chapters.includes(current)) chapterFilter.value = current;
   }
 
